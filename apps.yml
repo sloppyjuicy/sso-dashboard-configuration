@@ -1,6 +1,6 @@
 # Data Classification : Public
 # The contents of this file are meant to be publicly accessible and this file contains no private data
-# 
+
 # NOTE: authorized_groups and authorized_users control two things independently:
 #
 # 1. Does the SSO Dashboard display a tile to the user for this application?
@@ -24,6 +24,28 @@
 #                The user must be a member of them to access the application.
 #            Otherwise,
 #                All SSO users (including the general public) can access the app.
+
+# NOTE: MFA is generally required, following these rules:
+#
+# 1. If the client_id is missing, MFA is not required. (This is uncommon.)
+#
+# 2. If `AAL: LOW` is present, MFA is not required. (This is uncommon.)
+#
+# 3. Otherwise, MFA is required.
+#
+#    After a user logs in with one of the supported methods (ldap, fxa, etc);
+#    the auth method will inform us if the user's account has MFA set up.
+#
+#    Access will be denied if the user doesn't have MFA configured.
+#
+#    Users need to configure MFA using the appropriate process for their
+#    chosen auth method. LDAP is well-understood; for other methods, enabling
+#    passkeys, authenticators, and/or other MFA methods can be done at:
+#
+#    FxA/MzA: https://accounts.firefox.com/settings#two-step-authentication
+#    GitHub: https://github.com/settings/security
+#    Google: https://myaccount.google.com/security#recovery
+#    Email: (not supported)
 
 apps:
 - application:
@@ -79,7 +101,6 @@ apps:
     authorized_groups:
     - team_moco
     - team_mofo
-#    - team_mzla
     authorized_users: []
     client_id: el46s4SPK4ZOhQBsAjtiDYKFQkXK76xm
     display: false
@@ -93,7 +114,6 @@ apps:
     authorized_groups:
     - team_moco
     - team_mofo
-#    - team_mzla
     authorized_users: []
     client_id: 9F55B8e5VmFl4lCgYObnA1TkyRFTxQ9M
     display: false
@@ -109,6 +129,8 @@ apps:
     - team_moco
     - team_mofo
     - team_mzla
+    - team_mzai
+    - team_mzvc
     - team_mozillaonline
     - mozilliansorg_nda
     authorized_users: []
@@ -178,7 +200,6 @@ apps:
     authorized_groups:
     - team_moco
     - team_mofo
-#    - team_mzla
     authorized_users:
     - casa-fivetran@mozilla.com
     client_id: IU80mVpKPtIZyUZtya9ZnSTs6fKLt3JO
@@ -189,22 +210,6 @@ apps:
     url: https://biztera.com/mozilla
     vanity_url:
     - /casa
-- application:
-    authorized_groups:
-    - cloudhealth-power
-    - cloudhealth-standard
-    - cloudhealth-administrator
-    - cloudhealth-enhanced-power-user
-    - cloudhealth-enhanced-standard-user
-    authorized_users: []
-    client_id: kvfwYzMi40o93JJuuzfdwzeXnnJghgwN
-    display: true
-    logo: cloudhealth.png
-    name: CloudHealth
-    op: auth0
-    url: https://auth.mozilla.auth0.com/samlp/kvfwYzMi40o93JJuuzfdwzeXnnJghgwN
-    vanity_url:
-    - /cloudhealth
 - application:
     authorized_groups:
     - mozilliansorg_contentful-access
@@ -231,36 +236,9 @@ apps:
     vanity_url:
     - /discourse
 - application:
-    AAL: LOW
-    authorized_groups:
-    - everyone
-    authorized_users: []
-    client_id: RqUns8zD5oTsEsjTKAUMhF55sLfuQsGv
-    display: false
-    logo: discourse.png
-    name: Discourse Staging
-    op: auth0-dev
-    url: https://discourse-staging.production.paas.mozilla.community/auth/auth0
-    vanity_url:
-    - /discourse-stage
-- application:
-    AAL: LOW
-    authorized_groups:
-    - everyone
-    authorized_users: []
-    client_id: 3LIXec4tKVr6SltYFYUYsE0GIw0Jm2T0
-    display: false
-    logo: discourse.png
-    name: Discourse-Dev
-    op: auth0-dev
-    url: https://discourse.allizom.org/auth/auth0
-    vanity_url:
-    - /discourse-dev
-- application:
     authorized_groups:
     - team_moco
     - team_mofo
-#    - team_mzla
     authorized_users: []
     client_id: 72Q4MlsbMzRo5Sij6y5JPDAiyGcyDKB2
     display: false
@@ -272,29 +250,8 @@ apps:
     - /domo
 - application:
     authorized_groups:
-    - everyone
-    authorized_users: []
-    client_id: GmGXMS6RJt3ZvabfTjx16B97pETlnUxd
-    display: false
-    logo: auth0.png
-    name: DXR
-    op: auth0
-    url: https://auth.mozilla.auth0.com/samlp/GmGXMS6RJt3ZvabfTjx16B97pETlnUxd
-- application:
-    authorized_groups:
-    - everyone
-    authorized_users: []
-    client_id: kNsY9QiOy7pSUjiordq7WixztBPCepuD
-    display: false
-    logo: auth0.png
-    name: DXR-stage
-    op: auth0
-    url: https://auth.mozilla.auth0.com/samlp/kNsY9QiOy7pSUjiordq7WixztBPCepuD
-- application:
-    authorized_groups:
     - team_moco
     - team_mofo
-#    - team_mzla
     authorized_users:
     - calendars@mozilla.com
     client_id: DhBV04HLs6H8OeTHOlodz0LtkyY7VTU0
@@ -321,7 +278,6 @@ apps:
     authorized_groups:
     - team_moco
     - team_mofo
-#    - team_mzla
     - team_mozillajapan
     - team_mozillaonline
     authorized_users: []
@@ -337,12 +293,11 @@ apps:
     authorized_groups:
     - team_moco
     - team_mofo
-#    - team_mzla
     - team_mozillaonline
     authorized_users: []
     client_id: eaiAVdOLtf2KXZvexyCCViw0154E0U6x
-    display: false
-    logo: auth0.png
+    display: true
+    logo: figma.png
     name: Figma
     op: auth0
     url: https://www.figma.com/saml/887474606069541975/start
@@ -353,6 +308,8 @@ apps:
     - team_moco
     - team_mofo
     - team_mzla
+    - team_mzai
+    - team_mzvc
     - team_mozillajapan
     - team_mozillaonline
     - travelling_accounts
@@ -377,6 +334,8 @@ apps:
     - team_moco
     - team_mofo
     - team_mzla
+    - team_mzai
+    - team_mzvc
     - team_mozillajapan
     - team_mozillaonline
     - travelling_accounts
@@ -394,11 +353,14 @@ apps:
     url: https://auth.mozilla.auth0.com/samlp/smKTjsVVxUJDEkjIftOsP0bop2NWjysa?RelayState=https://calendar.google.com/
     vanity_url:
     - /gcalendar
+    - /gcal
 - application:
     authorized_groups:
     - team_moco
     - team_mofo
     - team_mzla
+    - team_mzai
+    - team_mzvc
     - team_mozillajapan
     - team_mozillaonline
     - travelling_accounts
@@ -444,43 +406,9 @@ apps:
     - /heroku
 - application:
     authorized_groups:
-    - IntranetWiki
-    authorized_users: []
-    client_id: 3TMLWJb8KIbjB1S3HeyjDm0ns192BTdZ
-    display: false
-    logo: auth0.png
-    name: Intranet
-    op: auth0
-    url: https://auth.mozilla.auth0.com/samlp/3TMLWJb8KIbjB1S3HeyjDm0ns192BTdZ
-- application:
-    authorized_groups:
-    - IntranetWiki
-    authorized_users: []
-    client_id: 0tHkuAC17kDkFip4szjsLvWHlXGJSjwc
-    display: false
-    logo: auth0.png
-    name: Intranet-stage
-    op: auth0
-    url: https://auth.mozilla.auth0.com/samlp/0tHkuAC17kDkFip4szjsLvWHlXGJSjwc
-- application:
-    authorized_groups:
-    - team_moco
-    - team_mofo
-#    - team_mzla
-    - everyone
-    authorized_users: []
-    client_id: f4SlPDVeVcWBChrAvH8uLuEYyt0aW916
-    display: false
-    logo: auth0.png
-    name: iplimitirc
-    op: auth0
-    url: https://auth.mozilla.auth0.com/samlp/f4SlPDVeVcWBChrAvH8uLuEYyt0aW916
-- application:
-    authorized_groups:
     - service_lucidchart
     - team_moco
     - team_mofo
-#    - team_mzla
     authorized_users: []
     client_id: 80JNexePA737rSLhBAABqIvMJTEAn11u
     display: false
@@ -490,20 +418,6 @@ apps:
     url: https://auth.mozilla.auth0.com/samlp/80JNexePA737rSLhBAABqIvMJTEAn11u
     vanity_url:
     - /lucidchart
-- application:
-    authorized_groups:
-    - IntranetWiki
-    - GuestWiki
-    - moc_service_accounts
-    authorized_users:
-    - moc+servicenow@mozilla.com
-    - moc-sso-monitoring@mozilla.com
-    client_id: LVjFyOpHUdAJTLkTmDnUADnQmUKOWXO2
-    display: false
-    logo: mana.png
-    name: Mana - old
-    op: auth0
-    url: https://auth.mozilla.auth0.com/samlp/LVjFyOpHUdAJTLkTmDnUADnQmUKOWXO2
 - application:
     authorized_groups:
     - team_moco
@@ -524,8 +438,11 @@ apps:
     - team_moco
     - team_mofo
     - team_mzla
+    - team_mzai
+    - team_mzvc
     - team_mozillaonline
     - team_office_support
+    - travelling_accounts_jira
     authorized_users: []
     client_id: TKqD0MP8sDeJAc9QC4f5yp2r9qbx5fcZ
     display: true
@@ -537,9 +454,16 @@ apps:
     - /jira
 - application:
     authorized_groups:
-    - IntranetWiki
-    - GuestWiki
+    - team_moco
+    - team_mofo
+    - team_mzla
+    - team_mzai
+    - team_mzvc
+    - team_mozillajapan
+    - team_mozillaonline
+    - team_office_support
     - moc_service_accounts
+    - travelling_accounts_jira
     authorized_users:
     - moc+servicenow@mozilla.com
     - moc-sso-monitoring@mozilla.com
@@ -555,8 +479,8 @@ apps:
     authorized_groups:
     - team_moco
     - team_mofo
-#    - team_mzla
     - team_mozillaonline
+    - team_mzla
     authorized_users: []
     client_id: 8IhkiQO1reUO0an6e95CJ6EMBg7Lg5xQ
     display: true
@@ -604,29 +528,6 @@ apps:
     - /mdn
 - application:
     authorized_groups:
-    - everyone
-    authorized_users: []
-    client_id: nPr8QRo0dLxM3RRHwIXRSvhmOSPDvNr4
-    display: true
-    logo: moderator.png
-    name: Moderator
-    op: auth0
-    url: https://moderator.mozilla.org/oidc/authenticate/
-    vanity_url:
-    - /moderator
-- application:
-    AAL: LOW
-    authorized_groups:
-    - everyone
-    authorized_users: []
-    client_id: HC1FeMf3dVCTnAZbQR08quMylQEUcu60
-    display: false
-    name: vouches.mozillians.org
-    logo: mozillians.png
-    op: auth0
-    url: https://vouches.mozillians.org/oidc/authenticate/
-- application:
-    authorized_groups:
     - mozilliansorg_nucleus_admin
     authorized_users: []
     client_id: a6cidU6mSbciFAjy4uRQeeuFHIsLIWgg
@@ -649,7 +550,6 @@ apps:
     authorized_groups:
     - team_moco
     - team_mofo
-#    - team_mzla
     authorized_users: []
     client_id: 4HNLHcA7ZSNVWSJVBk9yVxq06WRquN2L
     display: false
@@ -663,7 +563,6 @@ apps:
     authorized_groups:
     - team_moco
     - team_mofo
-#    - team_mzla
     - everyone
     authorized_users: []
     client_id: Gav1XmmrpBxts0zeDPOSfGesVrTt044k
@@ -688,7 +587,6 @@ apps:
     authorized_groups:
     - team_moco
     - team_mofo
-#    - team_mzla
     authorized_users: []
     client_id: DBRlLjVEUbw1yWrUYAHNYl22KBkKAjql
     display: true
@@ -714,7 +612,6 @@ apps:
     authorized_groups:
     - team_moco
     - team_mofo
-#    - team_mzla
     authorized_users: []
     client_id: 3rbiX5U5EZZFf9tvYpOdoUxJ6A2TnH2q
     display: false
@@ -736,66 +633,16 @@ apps:
     url: https://riskheatmap.security.allizom.org/
 - application:
     authorized_groups:
-    - team_moco
     - team_mofo
-#    - team_mzla
-    - everyone
-    authorized_users: []
-    client_id: ByW5ChOPpsQaQFLcAuZBbtjFrh67uBgt
-    display: false
-    logo: salescloud.png
-    name: SalesCloud
-    op: auth0
-    url: https://auth.mozilla.auth0.com/samlp/ByW5ChOPpsQaQFLcAuZBbtjFrh67uBgt
-    vanity_url:
-    - /salescloud
-- application:
-    authorized_groups:
-    - team_mofo
-#    - team_mzla
     authorized_users: []
     client_id: Vnj9iPj1FJz4xTlco6XHLwM3oyRUO9iQ
     display: true
     logo: salescloud.png
-    name: SalesCloud Non-Profit
+    name: MoFo Salesforce
     op: auth0
     url: https://auth.mozilla.auth0.com/samlp/Vnj9iPj1FJz4xTlco6XHLwM3oyRUO9iQ
     vanity_url:
     - /salesforcenonprofit
-- application:
-    authorized_groups:
-    - team_moco
-    - team_mofo
-#    - team_mzla
-    - everyone
-    authorized_users: []
-    client_id: 54KBW3ESzKFfQws77PCXziJnPt0dYHE0
-    display: false
-    logo: salescloud.png
-    name: Salesforce.com Dev Sandbox
-    op: auth0
-    url: https://auth.mozilla.auth0.com/samlp/54KBW3ESzKFfQws77PCXziJnPt0dYHE0
-- application:
-    authorized_groups:
-    - team_moco
-    - SecurityWiki
-    authorized_users: []
-    client_id: OWVEwzt059vjws6mkQgGeqJChA4dBI70
-    display: false
-    logo: auth0.png
-    name: Securitywiki-stage
-    op: auth0
-    url: https://auth.mozilla.auth0.com/samlp/OWVEwzt059vjws6mkQgGeqJChA4dBI70
-- application:
-    authorized_groups:
-    - mozilliansorg_snippets_admin
-    authorized_users: []
-    client_id: A7GAcuN9gE9x3H186dKQgzS3jsV9Qmgp
-    display: true
-    logo: snippets.png
-    name: Snippets
-    op: auth0
-    url: https://snippets-admin.mozilla.org/oidc/authenticate/
 - application:
     authorized_groups:
     - mozilliansorg_pocket_dataanalytics
@@ -810,7 +657,6 @@ apps:
     authorized_groups:
     - team_moco
     - team_mofo
-#    - team_mzla
     - everyone
     authorized_users: []
     client_id: Wz5oO6y8oJ35Yq1B91aC4pkwlXdes7jR
@@ -819,16 +665,6 @@ apps:
     name: support.allizom.org:admin
     op: auth0
     url: https://auth.mozilla.auth0.com/samlp/Wz5oO6y8oJ35Yq1B91aC4pkwlXdes7jR
-- application:
-    authorized_groups:
-    - everyone
-    authorized_users: []
-    client_id: a145ph7ZPSz97z8QkiuP1iId6MFPXXUH
-    display: false
-    logo: auth0.png
-    name: support.mozilla.org:admin
-    op: auth0
-    url: https://auth.mozilla.auth0.com/samlp/a145ph7ZPSz97z8QkiuP1iId6MFPXXUH
 - application:
     AAL: LOW
     authorized_groups:
@@ -847,9 +683,12 @@ apps:
     - team_moco
     - team_mofo
     - team_mzla
+    - team_mzai
+    - team_mzvc
     - team_mozillajapan
     - team_mozillaonline
     - team_office_support
+    - travelling_accounts_jira
     - moc_service_accounts
     authorized_users:
     - moc+servicenow@mozilla.com
@@ -864,6 +703,7 @@ apps:
     vanity_url:
     - /thehub
     - /servicenow
+    - /jsm
 - application:
     AAL: LOW
     authorized_groups:
@@ -882,6 +722,8 @@ apps:
     - team_moco
     - team_mofo
     - team_mzla
+    - team_mzai
+    - team_mzvc
     authorized_users: []
     client_id: Hypn042D0cqtqET33nRrnqOwAcIXOqx6
     display: true
@@ -919,41 +761,8 @@ apps:
     url: https://auth.mozilla.auth0.com/samlp/pRwf1AWvIO5t4zyMsF8R18wtt1jfLp5o
 - application:
     authorized_groups:
-    - mozilliansorg_slack-access
     - team_moco
     - team_mofo
-    - team_mzla
-    - team_mozillaonline
-    - travelling_accounts
-    - team_office_support
-    authorized_users: []
-    client_id: WXVdgVoCca11OtpGlK8Ir3pR9CBAlSA5
-    display: true
-    logo: slack.png
-    name: Slack
-    op: auth0
-    url: https://auth.mozilla.auth0.com/samlp/WXVdgVoCca11OtpGlK8Ir3pR9CBAlSA5
-    vanity_url:
-    - /slack
-- application:
-    authorized_groups:
-    - team_pocket
-    - travelling_accounts
-    - mozilliansorg_slack_pocket_access
-    authorized_users: []
-    client_id: sZlNsFIG9f3vKrq9649Y7UxIyrmr8L7v
-    display: true
-    logo: slack.png
-    name: Pocket Slack
-    op: auth0
-    url: https://auth.mozilla.auth0.com/samlp/sZlNsFIG9f3vKrq9649Y7UxIyrmr8L7v
-    vanity_url:
-    - /pocket-slack
-- application:
-    authorized_groups:
-    - team_moco
-    - team_mofo
-#    - team_mzla
     authorized_users: []
     client_id: meBoR5vlD0kK0qeUXshNjOB1PbGKjsro
     display: false
@@ -967,7 +776,6 @@ apps:
     authorized_groups:
     - team_moco
     - team_mofo
-#    - team_mzla
     authorized_users: []
     client_id: j8FN0DB6RwrlfLhX4opVAZ2tDYbBiMMU
     display: false
@@ -981,7 +789,6 @@ apps:
     authorized_groups:
     - team_moco
     - team_mofo
-#    - team_mzla
     - everyone
     authorized_users: []
     client_id: i55sTCbmgUTkvHPW3SDueKlKbtPj5iRF
@@ -1010,65 +817,6 @@ apps:
     authorized_groups:
     - team_moco
     - team_mofo
-#    - team_mzla
-    - cloudops_atmo_access
-    authorized_users: []
-    client_id: 6GDrRrIYZuRRKLXXbucm4bO0eafK0AKN
-    display: false
-    logo: auth0.png
-    name: Analysis Telemetry
-    op: auth0
-    url: https://analysis.telemetry.mozilla.org/
-- application:
-    authorized_groups:
-    - netops
-    - relops
-    - team_opsec
-    - team_moc
-    authorized_users: []
-    client_id: GWhjnB7egp5hDryXeoD7OJRjHshWWQap
-    display: false
-    logo: auth0.png
-    name: Netops Gitlab
-    op: auth0
-    url: https://auth.mozilla.auth0.com/samlp/GWhjnB7egp5hDryXeoD7OJRjHshWWQap
-- application:
-    authorized_groups:
-    - cis_whitelist
-    - team_moco
-    authorized_users: []
-    client_id: BRMXeyw2avAOj7GgBD4SuIHxopb0yZJP
-    display: false
-    logo: auth0.png
-    name: Apache Test RP
-    op: auth0-dev
-    url: https://apache.testrp.security.allizom.org/
-- application:
-    AAL: LOW
-    authorized_groups:
-    - everyone
-    authorized_users: []
-    client_id: FeqjZfpOqMIkcGKkd2fDjpnm5oSsOOZ2
-    display: false
-    logo: auth0.png
-    name: AAL Low Test RP
-    op: auth0-dev
-    url: https://aai-low-social-ldap-pwless.testrp.security.allizom.org/
-- application:
-    authorized_groups:
-    - everyone
-    authorized_users: []
-    client_id: mc1l0G4sJI2eQfdWxqgVNcRAD9EAgHib
-    display: false
-    logo: auth0.png
-    name: SSO Dashboard (Dev)
-    op: auth0-dev
-    url: https://sso.allizom.org/
-- application:
-    authorized_groups:
-    - team_moco
-    - team_mofo
-#    - team_mzla
     - everyone
     authorized_users: []
     client_id: VjJFa4EeFWd29pMnhyAk7AkGW2ids5UX
@@ -1083,7 +831,6 @@ apps:
     authorized_groups:
     - team_moco
     - team_mofo
-#    - team_mzla
     authorized_users: []
     client_id: t1KWNQt71oskeip2KCu9j0KhwJJbBkig
     display: false
@@ -1095,7 +842,6 @@ apps:
     authorized_groups:
     - team_moco
     - team_mofo
-#    - team_mzla
     authorized_users: []
     client_id: uMkOuQX8LGTxAyYIiX4eLoc4hl0pWSJt
     display: false
@@ -1105,7 +851,7 @@ apps:
     url: https://auth.mozilla.auth0.com/samlp/uMkOuQX8LGTxAyYIiX4eLoc4hl0pWSJt
 - application:
     authorized_groups:
-    - aws_320464205386_admin
+    - mozilliansorg_iam-admins
     authorized_users: ['hcondei@mozilla.com']
     client_id: nlE73wPPuOaN0wAYKWY6QD3VcjUStehZ
     display: false
@@ -1117,11 +863,8 @@ apps:
     - /iam-grafana
 - application:
     authorized_groups:
-    - mozilliansorg_nda
     - mozilliansorg_boxcom-access
-    - team_moco
-    - team_mofo
-#    - team_mzla
+    - team_office_support
     authorized_users:
     - mozboxadmin@mozilla.com
     - servicedesk@mozilla.com
@@ -1149,7 +892,6 @@ apps:
     authorized_groups:
     - team_moco
     - team_mofo
-#    - team_mzla
     authorized_users: []
     client_id: ChKEapjEYTPx0T1b5QP01WhAeP8ymRJ7
     display: false
@@ -1192,6 +934,8 @@ apps:
     - team_moco
     - team_mofo
     - team_mzla
+    - team_mzai
+    - team_mzvc
     - team_mozillaonline
     - travelling_accounts
     - team_office_support
@@ -1229,44 +973,9 @@ apps:
     vanity_url:
     - /surveymonkey
 - application:
-    AAL: LOW
-    authorized_groups:
-    - everyone
-    authorized_users: []
-    client_id: jijaIzcZmFCDRtV74scMb9lI87MtYNTA
-    display: false
-    logo: auth0.png
-    name: mozillians.org Verification Client
-    op: auth0
-    url: https://mozillians.org/verify/identity/callback/
-- application:
-    AAL: LOW
-    authorized_groups:
-    - everyone
-    authorized_users: []
-    client_id: t9bMi4eTCPpMp5Y6E1Lu92iVcqU0r1P1
-    display: false
-    logo: auth0.png
-    name: mozillians.org Verification Client Staging
-    op: auth0
-    url: https://web-mozillians-staging.production.paas.mozilla.community/verify/identity/callback/
-- application:
-    AAL: LOW
-    authorized_groups:
-    - everyone
-    authorized_users: []
-    client_id: HvN5D3R64YNNhvcHKuMKny1O0KJZOOwH
-    display: false
-    logo: auth0.png
-    name: https://web-mozillians-staging.production.paas.mozilla.community -- account
-      verification client
-    op: auth0-dev
-    url: https://web-mozillians-staging.production.paas.mozilla.community/verify/identity/callback/
-- application:
     authorized_groups:
     - team_moco
     - team_mofo
-#    - team_mzla
     authorized_users: []
     client_id: tU9fTz20E17hlFVo2DViKtDLABzVxrir
     display: true
@@ -1280,7 +989,6 @@ apps:
     authorized_groups:
     - team_moco
     - team_mofo
-#    - team_mzla
     authorized_users: []
     client_id: 64Ud5s4qJ3GgFZQ2rUG2D4Fod0lYoUu0
     display: true
@@ -1294,7 +1002,6 @@ apps:
     authorized_groups:
     - team_moco
     - team_mofo
-#    - team_mzla
     - team_mozillaonline
     authorized_users: []
     client_id: iz2qSHo0lSv2nRZ8V3JnOESX5UR4dcpX
@@ -1386,7 +1093,6 @@ apps:
     authorized_groups:
     - team_moco
     - team_mofo
-#    - team_mzla
     authorized_users: []
     client_id: mC9OzwCHicAsokpRyJt468BTlO8bl5C4
     display: false
@@ -1432,23 +1138,14 @@ apps:
     authorized_groups:
     - everyone
     authorized_users: []
-    client_id: OwbZj5f5NnK161LTtOVshM131Nf6jWBe
-    display: false
-    logo: auth0.png
-    name: https://respond.mozilla.community
-    op: auth0
-    url: https://respond.mozilla.community/oidc/callback/
-- application:
-    AAL: LOW
-    authorized_groups:
-    - everyone
-    authorized_users: []
     client_id: cav8o4za5QGMXilUEjglH9cgJpQl33Ck
-    display: false
-    logo: auth0.png
-    name: moderator.mozilla.org
+    display: true
+    logo: mozillamoderator.png
+    name: Moderator
     op: auth0
-    url: https://moderator.mozilla.org/oidc/callback/
+    url: https://moderator.mozilla.org/oidc/authenticate/
+    vanity_url:
+    - /moderator
 - application:
     AAL: LOW
     authorized_groups:
@@ -1509,6 +1206,17 @@ apps:
     authorized_groups:
     - everyone
     authorized_users: []
+    client_id: 2KNOUCxN8AFnGGjDCGtqiDIzq8MKXi2h
+    display: false
+    logo: auth0.png
+    name: sso.mozilla.com
+    op: auth0
+    url: https://sso.allizom.org/redirect_uri
+- application:
+    AAL: LOW
+    authorized_groups:
+    - everyone
+    authorized_users: []
     client_id: YwL6bJ8mXFiCplWbMLaX2fqu715rKP8u
     display: false
     logo: auth0.png
@@ -1520,7 +1228,6 @@ apps:
     authorized_groups:
     - team_moco
     - team_mofo
-#    - team_mzla
     - mozilliansorg_nda
     - mozilliansorg_dinopark-dev
     authorized_users: []
@@ -1560,34 +1267,12 @@ apps:
     authorized_groups:
     - everyone
     authorized_users: []
-    client_id: aDL5o9SZRaYTH5zzkGntT4l76qydMbZe
-    display: false
-    logo: auth0.png
-    name: sso.allizom.org
-    op: auth0
-    url: http://localhost:5000/redirect_uri
-- application:
-    AAL: LOW
-    authorized_groups:
-    - everyone
-    authorized_users: []
     client_id: aJc4zjynRegTcrrxjB7PqV8lb9FdAVBr
     display: false
     logo: auth0.png
     name: discourse-staging.production.paas.mozilla.community
     op: auth0
     url: https://discourse-staging.production.paas.mozilla.community/auth/auth0/callback
-- application:
-    AAL: LOW
-    authorized_groups:
-    - everyone
-    authorized_users: []
-    client_id: c4j1TRdnJPdkFGJoEsU5LtL3ltPC5QyU
-    display: false
-    logo: auth0.png
-    name: www.standu.ps
-    op: auth0
-    url: https://www.standu.ps/oidc/callback/
 - application:
     AAL: LOW
     authorized_groups:
@@ -1670,7 +1355,6 @@ apps:
     authorized_groups:
     - team_moco
     - team_mofo
-#    - team_mzla
     authorized_users: []
     client_id: P5kUBn21KQ5m8IRMdNFONg17dJ9qTrlP
     display: false
@@ -1682,7 +1366,6 @@ apps:
     authorized_groups:
     - team_moco
     - team_mofo
-#    - team_mzla
     - mozilliansorg_nda
     authorized_users: []
     client_id: AJBSCa58Vu3bi1OiL30s2yCTXUkBj6KR
@@ -1697,7 +1380,6 @@ apps:
     authorized_groups:
     - team_moco
     - team_mofo
-#    - team_mzla
     authorized_users: []
     client_id: DGloMN2BXb0AC7lF5eRyOe1GXweqBAiI
     display: false
@@ -1710,23 +1392,12 @@ apps:
     - team_services_ops
     - balrog
     authorized_users: []
-    client_id: BXaDyWq2F0MNWc56hTxVnM0SkMBXMG0d
-    display: true
-    logo: balrog.png
-    name: Balrog - previous
-    op: auth0
-    url: https://aus4-admin.mozilla.org
-- application:
-    authorized_groups:
-    - team_services_ops
-    - balrog
-    authorized_users: []
     client_id: Qe16eoq0Uz9eSTVDVEO15DGBPCgqoAA2
     display: true
     logo: balrog.png
     name: Balrog (Prod)
     op: auth0
-    url: https://aus4-admin.mozilla.org
+    url: https://balrog.services.mozilla.com
 - application:
     authorized_groups:
     - team_services_ops
@@ -1737,23 +1408,11 @@ apps:
     logo: balrog.png
     name: Balrog (Stage)
     op: auth0
-    url: https://balrog-admin.stage.mozaws.net
-- application:
-    authorized_groups:
-    - team_services_ops
-    - balrog
-    authorized_users: []
-    client_id: MiCmQACl7ZMdn1lTtYnazMYUFiAYAqbF
-    display: true
-    logo: balrog.png
-    name: Balrog (Dev)
-    op: auth0
-    url: https://balrog-admin.dev.mozaws.net
+    url: https://balrog-admin-static-stage.stage.mozaws.net/
 - application:
     authorized_groups:
     - team_moco
     - team_mofo
-#    - team_mzla
     authorized_users: []
     client_id: zk9N7LU2ihMIy0bwlGd7GfRVXDKsGQjI
     display: false
@@ -1763,21 +1422,8 @@ apps:
     url: https://auth.mozilla.auth0.com/samlp/zk9N7LU2ihMIy0bwlGd7GfRVXDKsGQjI
 - application:
     authorized_groups:
-    - team_pocket
-    authorized_users: []
-    client_id: IJfd6g73V42fh6LHW6leFdQO7jR0A8of
-    display: true
-    logo: jira.png
-    name: getpocket.atlassian.net
-    op: auth0
-    url: https://getpocket.atlassian.net/
-    vanity_url:
-    - /pocket-jira
-- application:
-    authorized_groups:
     - team_moco
     - team_mofo
-#    - team_mzla
     authorized_users: []
     client_id: 31dwqlImDXaTqW7m8E0YY5CN16ZLf72Q
     display: false
@@ -1791,7 +1437,6 @@ apps:
     authorized_groups:
     - team_moco
     - team_mofo
-#    - team_mzla
     - team_mozillaonline
     authorized_users: []
     client_id: 2dbkrvUJa5gnxGSnMLZ1jflbtrahhrEi
@@ -1806,7 +1451,6 @@ apps:
     authorized_groups:
     - team_moco
     - team_mofo
-#    - team_mzla
     authorized_users: []
     client_id: WuFEV87Q4or1WlncXR3WRgcbD1oceeme
     display: false
@@ -1818,7 +1462,6 @@ apps:
     authorized_groups:
     - team_moco
     - team_mofo
-#    - team_mzla
     authorized_users: []
     client_id: Lh20PL4WfuZRoZ45dCW0PbnTN8wqN8fd
     display: false
@@ -1829,9 +1472,19 @@ apps:
 - application:
     authorized_groups:
     - team_moco
+    authorized_users: []
+    client_id: pViyy2GZD7AC9T7khbJnSt1cPbo4R0Ka
+    display: false
+    logo: auth0.png
+    name: Webcompat Dashboard (dev)
+    op: auth0
+    url: https://dev.webcompat.nonprod.webservices.mozgcp.net/login
+- application:
+    authorized_groups:
+    - team_moco
     - team_mofo
-#    - team_mzla
-    - mozilliansorg_non-moco-sheriffs-basic
+    - mozilliansorg_obs_grafana_admin-access
+    - mozilliansorg_obs_grafana_editor-access
     authorized_users: []
     client_id: jGx4Z2JTWsgQWiBmvrCNbe5WXAfMivzb
     display: false
@@ -1843,19 +1496,6 @@ apps:
     authorized_groups:
     - team_moco
     - team_mofo
-#    - team_mzla
-    authorized_users: []
-    client_id: WLQrmFTcXlSDelnxOASZ4KJQTE5gXZFt
-    display: false
-    logo: auth0.png
-    name: dev.sumo.moz.works
-    op: auth0
-    url: https://dev.sumo.moz.works
-- application:
-    authorized_groups:
-    - team_moco
-    - team_mofo
-#    - team_mzla
     authorized_users: []
     client_id: dWcDz6ZYNuevquzzvAgRYOgBZLxY0ucx
     display: false
@@ -1867,7 +1507,6 @@ apps:
     authorized_groups:
     - team_moco
     - team_mofo
-#    - team_mzla
     authorized_users: []
     client_id: k3JF93rR1HI7O2HEndhCI0p1ZyBhhMCr
     display: false
@@ -1879,7 +1518,6 @@ apps:
     authorized_groups:
     - team_moco
     - team_mofo
-#    - team_mzla
     - team_mozillaonline
     authorized_users: []
     client_id: OlwWsXslbA9wk5lQOHUDIUSrtIFTauTy
@@ -1892,19 +1530,6 @@ apps:
     authorized_groups:
     - team_moco
     - team_mofo
-#    - team_mzla
-    authorized_users: []
-    client_id: m6x0phAu4rq4imC6f6gRYaGmQgStCdlG
-    display: false
-    logo: auth0.png
-    name: strategy-and-insights.mozilla.com
-    op: auth0
-    url: https://strategy-and-insights.mozilla.com/callback
-- application:
-    authorized_groups:
-    - team_moco
-    - team_mofo
-#    - team_mzla
     - team_mozillaonline
     authorized_users: []
     client_id: 7YTXsNQhLSiNsXPtDdXdvryD5dN30DEb
@@ -1917,7 +1542,6 @@ apps:
     authorized_groups:
     - team_moco
     - team_mofo
-#    - team_mzla
     authorized_users: []
     client_id: UR9C6jNpAxXBv0bEnzDsHGUQAEyasre2
     display: false
@@ -1929,7 +1553,6 @@ apps:
     authorized_groups:
     - team_moco
     - team_mofo
-#    - team_mzla
     authorized_users: []
     client_id: wC5AsSzi8BbDHHDDieRjU3mcpEeTVcwj
     display: false
@@ -1941,7 +1564,6 @@ apps:
     authorized_groups:
     - team_moco
     - team_mofo
-#    - team_mzla
     authorized_users: []
     client_id: dVL10G8KVJymQ6Tx6naRZRbX6L8rhO1E
     display: false
@@ -1953,7 +1575,6 @@ apps:
     authorized_groups:
     - team_moco
     - team_mofo
-#    - team_mzla
     authorized_users: []
     client_id: 7jfouvibRlddw49I8prbSl2xrxKXwwoh
     display: false
@@ -1965,7 +1586,6 @@ apps:
     authorized_groups:
     - team_moco
     - team_mofo
-#    - team_mzla
     authorized_users: []
     client_id: R04ouRZsRnbVXztgFEA0ZdNUia6WMFa1
     display: false
@@ -1977,7 +1597,6 @@ apps:
     authorized_groups:
     - team_moco
     - team_mofo
-#    - team_mzla
     authorized_users: []
     client_id: 8udOeshOuK7LREPL0G5Z9n2mY4expDLx
     display: false
@@ -1989,7 +1608,6 @@ apps:
     authorized_groups:
     - team_moco
     - team_mofo
-#    - team_mzla
     authorized_users: []
     client_id: 33XOsgKlENOSLXLtRv7Vb65v38plFwlg
     display: false
@@ -2001,19 +1619,6 @@ apps:
     authorized_groups:
     - team_moco
     - team_mofo
-#    - team_mzla
-    authorized_users: []
-    client_id: l7kCqo8U1Ka2ZtlE85Dmy2a8Ic1I8y7H
-    display: false
-    logo: auth0.png
-    name: bacula1.private.mdc1.mozilla.com
-    op: auth0
-    url: https://bacula1.private.mdc1.mozilla.com/callback
-- application:
-    authorized_groups:
-    - team_moco
-    - team_mofo
-#    - team_mzla
     authorized_users: []
     client_id: EtCJe9m2NFGF4TO0kIfPoT7gQqTKU0DE
     display: false
@@ -2025,31 +1630,6 @@ apps:
     authorized_groups:
     - team_moco
     - team_mofo
-#    - team_mzla
-    authorized_users: []
-    client_id: MmT719PU6y84GsRkym00nVvVHi2y5hPa
-    display: false
-    logo: auth0.png
-    name: testwebapp.private.mdc1.mozilla.com
-    op: auth0
-    url: https://testwebapp.private.mdc1.mozilla.com/callback
-- application:
-    authorized_groups:
-    - team_moco
-    - team_mofo
-#    - team_mzla
-    authorized_users: []
-    client_id: Hi9rqHLPlnpRfMkc7dtkToFc3DHtcf4Z
-    display: false
-    logo: auth0.png
-    name: rundeck1.private.scl3.mozilla.com
-    op: auth0
-    url: https://rundeck1.private.scl3.mozilla.com/callback
-- application:
-    authorized_groups:
-    - team_moco
-    - team_mofo
-#    - team_mzla
     authorized_users: []
     client_id: hIjZmDmmtkKuaOjmhd5HUzn0ResPDeqX
     display: false
@@ -2061,7 +1641,6 @@ apps:
     authorized_groups:
     - team_moco
     - team_mofo
-#    - team_mzla
     authorized_users: []
     client_id: 1QcjRY2UEYySI79IqorH94Td590oqXSA
     display: false
@@ -2073,7 +1652,6 @@ apps:
     authorized_groups:
     - team_moco
     - team_mofo
-#    - team_mzla
     - vpn_cloudops_shipit
     authorized_users: []
     client_id: 4u5EiGAICaWFmsyWamVaN1D4f4P6MlR0
@@ -2086,7 +1664,6 @@ apps:
     authorized_groups:
     - team_moco
     - team_mofo
-#    - team_mzla
     authorized_users: []
     client_id: XwWBobhe6XlQrngdct8sEdLFAgsW89yB
     display: false
@@ -2098,7 +1675,6 @@ apps:
     authorized_groups:
     - team_moco
     - team_mofo
-#    - team_mzla
     - mozilliansorg_nda
     authorized_users: []
     client_id: 462AVvm5b1GOLD0z7Gao0Eje24aF3Kz0
@@ -2111,19 +1687,6 @@ apps:
     authorized_groups:
     - team_moco
     - team_mofo
-#    - team_mzla
-    authorized_users: []
-    client_id: xTQ9ithTGuqzB0MaPkafbj3Q6HTE2vM0
-    display: false
-    logo: auth0.png
-    name: hasal-server.ateam.tpe1.mozilla.com
-    op: auth0
-    url: http://hasal-server.ateam.tpe1.mozilla.com:8080/securityRealm/finishLogin
-- application:
-    authorized_groups:
-    - team_moco
-    - team_mofo
-#    - team_mzla
     authorized_users: []
     client_id: bSCGkqkGbQPAuIDt0kYqmnhimlkh2kwH
     display: false
@@ -2135,7 +1698,6 @@ apps:
     authorized_groups:
     - team_moco
     - team_mofo
-#    - team_mzla
     authorized_users: []
     client_id: m772guBT5bEt60OCg4l11NbwDbOX2SLm
     display: false
@@ -2147,21 +1709,6 @@ apps:
     authorized_groups:
     - team_moco
     - team_mofo
-#    - team_mzla
-    - mozilliansorg_project-link-aws-admin
-    - mozilliansorg_searchfox-aws  # https://bugzilla.mozilla.org/show_bug.cgi?id=1677158
-    authorized_users: []
-    client_id: N7lULzWtfVUDGymwDs0yDEq6ZcwmFazj
-    display: false
-    logo: auth0.png
-    name: AWS Federated CLI
-    op: auth0
-    url: http://localhost:10800/redirect_uri
-- application:
-    authorized_groups:
-    - team_moco
-    - team_mofo
-#    - team_mzla
     authorized_users: []
     client_id: hGFkZoxf7dzKy3PIsT7w2XTBQOhb3ZK0
     display: false
@@ -2173,31 +1720,6 @@ apps:
     authorized_groups:
     - team_moco
     - team_mofo
-#    - team_mzla
-    authorized_users: []
-    client_id: IVq10RLJgYIQX9Mzzr0hPhDkyix6kZQb
-    display: false
-    logo: auth0.png
-    name: wpt.dev.mozaws.net
-    op: auth0
-    url: https://wpt.dev.mozaws.net/redirect_uri
-- application:
-    authorized_groups:
-    - team_moco
-    - team_mofo
-#    - team_mzla
-    authorized_users: []
-    client_id: Zs6FFIXPUstFKpzBau4cRQ1aFBx4dKBR
-    display: false
-    logo: auth0.png
-    name: screenshots-admin.services.mozilla.com
-    op: auth0
-    url: https://screenshots-admin.services.mozilla.com/openid/callback/login/
-- application:
-    authorized_groups:
-    - team_moco
-    - team_mofo
-#    - team_mzla
     authorized_users: []
     client_id: iQwPHkpTw1RmbYe6ov2qFMfxbVN7DOB7
     display: false
@@ -2209,7 +1731,6 @@ apps:
     authorized_groups:
     - team_moco
     - team_mofo
-#    - team_mzla
     authorized_users: []
     client_id: albdy7m1X0YqdKEYx6qiJ9dKfg4ousn0
     display: false
@@ -2221,19 +1742,6 @@ apps:
     authorized_groups:
     - team_moco
     - team_mofo
-#    - team_mzla
-    authorized_users: []
-    client_id: N3GRGrtTfNehZYvC3vWVUgd7Rk9F2Opb
-    display: false
-    logo: auth0.png
-    name: panorama.mdc1.mozilla.net
-    op: auth0
-    url: https://panorama.mdc1.mozilla.net:443/SAML20/SP/ACS
-- application:
-    authorized_groups:
-    - team_moco
-    - team_mofo
-#    - team_mzla
     - mozilliansorg_nda
     authorized_users: []
     client_id: 725CWQLZ1oOt8XEnjsMvjYkZMZna2Y1V
@@ -2246,7 +1754,6 @@ apps:
     authorized_groups:
     - team_moco
     - team_mofo
-#    - team_mzla
     authorized_users: []
     client_id: 0igrKwGTBpqNHUhPMikxMwjOrZfmzaRh
     display: false
@@ -2258,7 +1765,6 @@ apps:
     authorized_groups:
     - team_moco
     - team_mofo
-#    - team_mzla
     authorized_users: []
     client_id: 29t2n3LKKnyTbGtWmfTkQpau0mp7QmMH
     display: false
@@ -2270,7 +1776,6 @@ apps:
     authorized_groups:
     - team_moco
     - team_mofo
-#    - team_mzla
     authorized_users: []
     client_id: n0L5J2H8fk5T4G7Ma4Ke75Hc6Be5hsRV
     display: false
@@ -2282,7 +1787,6 @@ apps:
     authorized_groups:
     - team_moco
     - team_mofo
-#    - team_mzla
     authorized_users: []
     client_id: 3a6sbM3CfbTQ8YkZ4wW7YpOdNN5NX4Hb
     display: false
@@ -2294,7 +1798,6 @@ apps:
     authorized_groups:
     - team_moco
     - team_mofo
-#    - team_mzla
     authorized_users: []
     client_id: 47BCiKGMwpCH5K7IzmJ1DjrHSo82krNs
     display: false
@@ -2306,7 +1809,6 @@ apps:
     authorized_groups:
     - team_moco
     - team_mofo
-#    - team_mzla
     authorized_users: []
     client_id: XMAlQpd3P8y34lZF2EvgdNkNxWIP3KD2
     display: false
@@ -2316,24 +1818,12 @@ apps:
     url: https://safarijv.auth0.com/login/callback?connection=Mozilla
 - application:
     authorized_groups:
-    - team_moco
-    - team_mofo
-#    - team_mzla
-    authorized_users: []
-    client_id: VEVkmAppSLa3zc9VRhjkDJPwNSs6Zy7B
-    display: false
-    logo: auth0.png
-    name: screenshots-admin-default.stage.mozaws.net
-    op: auth0
-    url: https://screenshots-admin-default.stage.mozaws.net/openid/callback/login/
-- application:
-    authorized_groups:
     - team_mozillaonline
     - mozilliansorg_stmo_nda
     - stmo_nda
     - team_moco
     - team_mofo
-#    - team_mzla
+    - team_mzla
     authorized_users: []
     client_id: rgE6x7G6X1i3TjOy43qYG8vbcyKtcN6E
     display: false
@@ -2345,19 +1835,6 @@ apps:
     authorized_groups:
     - team_moco
     - team_mofo
-#    - team_mzla
-    authorized_users: []
-    client_id: LNPKbJGoCqEBuCtIZIoJg08V4QtNzfYJ
-    display: false
-    logo: auth0.png
-    name: graphite-mdc1.mozilla.org
-    op: auth0
-    url: https://graphite-mdc1.mozilla.org/login
-- application:
-    authorized_groups:
-    - team_moco
-    - team_mofo
-#    - team_mzla
     authorized_users: []
     client_id: a8153qZo1lnReZ3hj3ZCmP8YMzArrHqU
     display: false
@@ -2369,7 +1846,6 @@ apps:
     authorized_groups:
     - team_moco
     - team_mofo
-#    - team_mzla
     authorized_users: []
     client_id: 1KN7o6GO88DyTLHW5WlsMm5V3qNRv7Ac
     display: false
@@ -2381,7 +1857,6 @@ apps:
     authorized_groups:
     - team_moco
     - team_mofo
-#    - team_mzla
     authorized_users: []
     client_id: nIqcS6cAGY2WRA5466YngH44T4xrrvCt
     display: false
@@ -2393,7 +1868,6 @@ apps:
     authorized_groups:
     - team_moco
     - team_mofo
-#    - team_mzla
     - mozilliansorg_shipit_devs
     authorized_users: []
     client_id: FK1mJkHhwjulTYBGklxn8W4Fhd1pgT4t
@@ -2406,7 +1880,6 @@ apps:
     authorized_groups:
     - team_moco
     - team_mofo
-#    - team_mzla
     authorized_users: []
     client_id: btcSD131nsA7Mv1g01U535XPRG3qdNFp
     display: false
@@ -2418,7 +1891,6 @@ apps:
     authorized_groups:
     - team_moco
     - team_mofo
-#    - team_mzla
     - vpn_cloudops_shipit
     authorized_users: []
     client_id: 2dXygwTNP3p7iLTSaEWbdoiJFkjSBqm4
@@ -2431,7 +1903,6 @@ apps:
     authorized_groups:
     - team_moco
     - team_mofo
-#    - team_mzla
     authorized_users: []
     client_id: 5tkbwIFZqYLtZtFIDki6Nqpt8GHUzZ2J
     display: false
@@ -2439,28 +1910,6 @@ apps:
     name: peaceful-stream-36350.herokuapp.com
     op: auth0
     url: https://peaceful-stream-36350.herokuapp.com/redirect_url
-- application:
-    authorized_groups:
-    - mozilliansorg_snippets_admin
-    authorized_users: []
-    client_id: a6jCoSzt99DFySdC3qvP5oSpYcEEOsvT
-    display: false
-    logo: auth0.png
-    name: Snippets Stage
-    op: auth0
-    url: https://snippets.allizom.org/oidc/callback/
-- application:
-    authorized_groups:
-    - team_moco
-    - team_mofo
-#    - team_mzla
-    authorized_users: []
-    client_id: M4TY5gZQ6nUyMIjWpXWFffRJ9pD3qPb2
-    display: false
-    logo: auth0.png
-    name: https://nhobot.ngrok.io
-    op: auth0
-    url: https://nhobot.ngrok.io/callback/auth
 - application:
     authorized_groups:
     - team_moco
@@ -2477,19 +1926,6 @@ apps:
     authorized_groups:
     - team_moco
     - team_mofo
-#    - team_mzla
-    authorized_users: []
-    client_id: rrXGZ6x7J4MIWWlQ6zhTzgED2GxIsHCv
-    display: false
-    logo: auth0.png
-    name: pentest-master.private.mdc1.mozilla.com
-    op: auth0
-    url: https://pentest-master.private.mdc1.mozilla.com/redirect_uri
-- application:
-    authorized_groups:
-    - team_moco
-    - team_mofo
-#    - team_mzla
     authorized_users: []
     client_id: AmqnIoKbdd59LaI4wt0pOPkuUHeMchJf
     display: false
@@ -2501,7 +1937,6 @@ apps:
     authorized_groups:
     - team_moco
     - team_mofo
-#    - team_mzla
     authorized_users: []
     client_id: 6BFjR5hArHbV7dzyUy2VYmnXCV5B0pdo
     display: false
@@ -2513,19 +1948,6 @@ apps:
     authorized_groups:
     - team_moco
     - team_mofo
-#    - team_mzla
-    authorized_users: []
-    client_id: amWBDrIIzlk2pyjgCyLruw0n9wplzUlm
-    display: false
-    logo: auth0.png
-    name: bacula1.private.scl3.mozilla.com
-    op: auth0
-    url: https://bacula1.private.scl3.mozilla.com/callback
-- application:
-    authorized_groups:
-    - team_moco
-    - team_mofo
-#    - team_mzla
     authorized_users: []
     client_id: Ef6czTFBKvTUR3FW08tYobaMGEnk9bzB
     display: false
@@ -2537,7 +1959,6 @@ apps:
     authorized_groups:
     - team_moco
     - team_mofo
-#    - team_mzla
     authorized_users: []
     client_id: ov4iTFaVzWnvGme0x7FmRarIvu10I08M
     display: false
@@ -2549,7 +1970,6 @@ apps:
     authorized_groups:
     - team_moco
     - team_mofo
-#    - team_mzla
     authorized_users: []
     client_id: rvidaekCvn75vjMcDiBGz2lsmQLDuoou
     display: false
@@ -2561,7 +1981,6 @@ apps:
     authorized_groups:
     - team_moco
     - team_mofo
-#    - team_mzla
     authorized_users: []
     client_id: xZWh7NZy5TB6IZ7hFPTIfL0Q0XqAW7st
     display: false
@@ -2573,7 +1992,6 @@ apps:
     authorized_groups:
     - team_moco
     - team_mofo
-#    - team_mzla
     authorized_users: []
     client_id: 5Z2yOkD1vAU6wAKX3mkFEwBWK8kBBpJD
     display: false
@@ -2585,31 +2003,6 @@ apps:
     authorized_groups:
     - team_moco
     - team_mofo
-#    - team_mzla
-    authorized_users: []
-    client_id: K3ZolIlVbVH41tI9czWdQaPAHWriGx92
-    display: false
-    logo: auth0.png
-    name: bacula1.private.mdc2.mozilla.com
-    op: auth0
-    url: https://bacula1.private.mdc2.mozilla.com/callback
-- application:
-    authorized_groups:
-    - team_moco
-    - team_mofo
-#    - team_mzla
-    authorized_users: []
-    client_id: F1VVD6nRTckSVrviMRaOdLBWIk1AvHYo
-    display: false
-    logo: auth0.png
-    name: sccache native PKCE
-    op: auth0
-    url: http://localhost:12731/redirect
-- application:
-    authorized_groups:
-    - team_moco
-    - team_mofo
-#    - team_mzla
     authorized_users: []
     client_id: dXTkbChUpSCKkj3YpY4KxpZ0iYg0tkNy
     display: false
@@ -2621,7 +2014,6 @@ apps:
     authorized_groups:
     - team_moco
     - team_mofo
-#    - team_mzla
     authorized_users: []
     client_id: saSz4srpJGtdSMS62v47Xb2FOQtT2xBF
     display: false
@@ -2633,7 +2025,6 @@ apps:
     authorized_groups:
     - team_moco
     - team_mofo
-#    - team_mzla
     authorized_users: []
     client_id: hU1YpGcL82wL04vTPsaPAQmkilrSE7wr
     display: false
@@ -2645,7 +2036,6 @@ apps:
     authorized_groups:
     - team_moco
     - team_mofo
-#    - team_mzla
     authorized_users: []
     client_id: teqIfOHtaidNWTa79bt7VJwf2Trr3ALQ
     display: false
@@ -2657,26 +2047,13 @@ apps:
     authorized_groups:
     - team_moco
     - team_mofo
-#    - team_mzla
     authorized_users: []
-    client_id: e1g4q4s7Q2Jos5XOt6pyHVA9JH4G3xjJ
+    client_id: fQlywUnbUKlGm7zZi13pVbtCxhBdmeep
     display: false
     logo: auth0.png
     name: Nagios
     op: auth0
-    url: https://nagios3.private.scl3.mozilla.com/scl3
-- application:
-    authorized_groups:
-    - team_moco
-    - team_mofo
-#    - team_mzla
-    authorized_users: []
-    client_id: zw5M6MyDDixeSXQR2XiDZz46hSOKIHhr
-    display: false
-    logo: auth0.png
-    name: Salesforce Marketing Cloud (test)
-    op: auth0
-    url: https://auth.test.exacttarget.com/Shibboleth.sso/SAML2/POST
+    url: https://nagios1.private.mdc1.mozilla.com/
 - application:
     authorized_groups:
     - team_moco
@@ -2693,7 +2070,6 @@ apps:
     authorized_groups:
     - team_moco
     - team_mofo
-#    - team_mzla
     authorized_users: []
     client_id: vgDriXO3k0LThShbbJUfgl23uAT2MKBp
     display: false
@@ -2705,7 +2081,6 @@ apps:
     authorized_groups:
     - team_moco
     - team_mofo
-#    - team_mzla
     authorized_users: []
     client_id: ZWzknyhzi1drDmC1zIQLomiYDX8IsJIk
     display: false
@@ -2717,7 +2092,6 @@ apps:
     authorized_groups:
     - team_moco
     - team_mofo
-#    - team_mzla
     authorized_users: []
     client_id: m35Bq2g6bRV37rs3cGa4UBR0qNI3IBKR
     display: false
@@ -2729,7 +2103,6 @@ apps:
     authorized_groups:
     - team_moco
     - team_mofo
-#    - team_mzla
     authorized_users:
     - iris-testing@mozilla.com
     client_id: 383wZyKOqULjvIJnA4Njz04lztkmxKjf
@@ -2742,7 +2115,6 @@ apps:
     authorized_groups:
     - team_moco
     - team_mofo
-#    - team_mzla
     authorized_users: []
     client_id: TTPiEfB9nU0DxzvFxCrj2HYmCtLP1NR3
     display: false
@@ -2754,20 +2126,6 @@ apps:
     authorized_groups:
     - team_moco
     - team_mofo
-#    - team_mzla
-    - mozilliansorg_nda
-    authorized_users: []
-    client_id: y2cZ14lTdsMjJdjmUNQ3PaLDrBCNJUZl
-    display: false
-    logo: auth0.png
-    name: localhost:5000 - Marty Ballard
-    op: auth0
-    url: http://localhost:5000/redirect_uri
-- application:
-    authorized_groups:
-    - team_moco
-    - team_mofo
-#    - team_mzla
     authorized_users: []
     client_id: BDRmLMBwmCqyBsL52IuQW8wLBLoLSBWo
     display: false
@@ -2779,7 +2137,6 @@ apps:
     authorized_groups:
     - team_moco
     - team_mofo
-#    - team_mzla
     authorized_users: []
     client_id: LdGd1MOIwHD7flZjj5OuQlzGVAyakGvj
     display: false
@@ -2791,7 +2148,6 @@ apps:
     authorized_groups:
     - team_moco
     - team_mofo
-#    - team_mzla
     - mozilliansorg_nda
     authorized_users: []
     client_id: a9d4XdRa07eZxC6GoPUI6WDFjvfyE9sY
@@ -2804,7 +2160,6 @@ apps:
     authorized_groups:
     - team_moco
     - team_mofo
-#    - team_mzla
     authorized_users: []
     client_id: wP33JOFmHQEd2TOHftxIppprqCnJzo3m
     display: false
@@ -2816,19 +2171,6 @@ apps:
     authorized_groups:
     - team_moco
     - team_mofo
-#    - team_mzla
-    authorized_users: []
-    client_id: Scha3pS5Y3vITvnhnbLxSla2MBMPdo3M
-    display: false
-    logo: auth0.png
-    name: graphite-mdc2.mozilla.org
-    op: auth0
-    url: https://graphite-mdc2.mozilla.org/login
-- application:
-    authorized_groups:
-    - team_moco
-    - team_mofo
-#    - team_mzla
     authorized_users: []
     client_id: Ury9HCvBS4B1SzAH8f3YASbbcGf5QlQf
     display: false
@@ -2840,7 +2182,6 @@ apps:
     authorized_groups:
     - team_moco
     - team_mofo
-#    - team_mzla
     authorized_users: []
     client_id: sAwFfYrOicxvNjkA75pdZUvkPcJqUPl3
     display: false
@@ -2852,7 +2193,6 @@ apps:
     authorized_groups:
     - team_moco
     - team_mofo
-#    - team_mzla
     authorized_users: []
     client_id: wwJwws9XZ6AVA48QOUU2FCGa6XP4U3aQ
     display: false
@@ -2866,7 +2206,6 @@ apps:
     authorized_groups:
     - team_moco
     - team_mofo
-#    - team_mzla
     authorized_users: []
     client_id: SJmdyaeuz4SkdoWgOXZxVFeQukpt5SMo
     display: false
@@ -2878,30 +2217,6 @@ apps:
     authorized_groups:
     - team_moco
     - team_mofo
-#    - team_mzla
-    authorized_users: []
-    client_id: pKXyeYwf5sIG6vImQ0HLvPpfzbZObhX0
-    display: false
-    logo: mana.png
-    name: Mana Stage (new)
-    op: auth0
-    url: https://auth.mozilla.auth0.com/samlp/pKXyeYwf5sIG6vImQ0HLvPpfzbZObhX0
-- application:
-    AAL: LOW
-    authorized_groups:
-    - everyone
-    authorized_users: []
-    client_id: TSYr6tZcybHxtOlYznB1fslCvCInnKw3
-    display: false
-    logo: auth0.png
-    name: pad.mozilla.org
-    op: auth0
-    url: https://pad.mozilla.org/openid/callback/login
-- application:
-    authorized_groups:
-    - team_moco
-    - team_mofo
-#    - team_mzla
     - mozilliansorg_nda
     authorized_users: []
     client_id: JW5noOxn5yRl3HbThBAqet7yLqu5uoTm
@@ -2914,7 +2229,6 @@ apps:
     authorized_groups:
     - team_moco
     - team_mofo
-#    - team_mzla
     authorized_users: []
     client_id: nJkH6xvVNwogpLjkrTePAKwjB4NpE74h
     display: false
@@ -2924,7 +2238,7 @@ apps:
     url: https://virgo-b.fuzzing.mozilla.org/
 - application:
     authorized_groups:
-    - aws_320464205386_admin
+    - mozilliansorg_iam-admins
     authorized_users: []
     client_id: LuNrrJpcnK2Nlh75wRJ2ab6gxEJYFMQG
     display: false
@@ -2938,7 +2252,6 @@ apps:
     authorized_groups:
     - team_moco
     - team_mofo
-#    - team_mzla
     authorized_users: []
     client_id: pTTMCxf9YNo4zPOE2l81JqIGHbxkotuJ
     display: false
@@ -2950,7 +2263,6 @@ apps:
     authorized_groups:
     - team_moco
     - team_mofo
-#    - team_mzla
     - team_mozillaonline
     authorized_users: []
     client_id: m3UJJU40O2T6awdbhoA8V6onp3AbzU3Q
@@ -2961,25 +2273,8 @@ apps:
     url: https://iodide.telemetry.mozilla.org/oidc/callback
 - application:
     authorized_groups:
-    - IntranetWiki
-    - GuestWiki
-    - moc_service_accounts
-    authorized_users:
-    - moc+servicenow@mozilla.com
-    - moc-sso-monitoring@mozilla.com
-    client_id: Qzs1IbNmnXB1js1KlhhdnwYZT9rwwF4U
-    display: false
-    logo: mana.png
-    name: Mana
-    op: auth0
-    url: https://auth.mozilla.auth0.com/samlp/Qzs1IbNmnXB1js1KlhhdnwYZT9rwwF4U
-    vanity_url:
-    - /mana
-- application:
-    authorized_groups:
     - team_moco
     - team_mofo
-#    - team_mzla
     authorized_users: []
     client_id: uqaHX7JDz335eg0A89725t4GH5dLCUoW
     display: false
@@ -2991,7 +2286,6 @@ apps:
     authorized_groups:
     - team_moco
     - team_mofo
-#    - team_mzla
     authorized_users: []
     client_id: NKhaOVehPM0VNljIiENTEP8jvaEUjYV3
     display: false
@@ -3145,7 +2439,6 @@ apps:
     authorized_groups:
     - team_moco
     - team_mofo
-#    - team_mzla
     authorized_users: []
     client_id: uGQC74llWoyAedpixUDpu8OLCf6GmqlC
     display: false
@@ -3171,7 +2464,6 @@ apps:
     authorized_groups:
     - team_moco
     - team_mofo
-#    - team_mzla
     authorized_users: []
     client_id: 7i1G4gM7zGuIE4h9T6s1Mho1e9P0cxk1
     display: false
@@ -3185,22 +2477,6 @@ apps:
     authorized_groups:
     - team_moco
     - team_mofo
-#    - team_mzla
-    - team_mozillaonline
-    authorized_users: []
-    client_id: 7HxWt6W66K2QeytVVCeOoWpJxkVExnzz
-    display: true
-    logo: ideascale.png
-    name: IdeaScale
-    op: auth0
-    url: https://auth.mozilla.auth0.com/samlp/7HxWt6W66K2QeytVVCeOoWpJxkVExnzz
-    vanity_url:
-    - /ideascale
-- application:
-    authorized_groups:
-    - team_moco
-    - team_mofo
-#    - team_mzla
     authorized_users: []
     client_id: wgh8S9GaE7sJ4i0QrAzeMxFXgWZYtB0l
     display: false
@@ -3214,7 +2490,6 @@ apps:
     authorized_groups:
     - team_moco
     - team_mofo
-#    - team_mzla
     authorized_users: []
     client_id: cEWzoPzUcDwk3JhpD9ENtPKMmE7T5QWv
     display: false
@@ -3226,7 +2501,6 @@ apps:
     authorized_groups:
     - team_moco
     - team_mofo
-#    - team_mzla
     - team_mozillaonline
     authorized_users: []
     client_id: WlWmEUQ2dmQFQJfKxNx1ZNkAJRKueaR1
@@ -3239,7 +2513,6 @@ apps:
     authorized_groups:
     - team_moco
     - team_mofo
-#    - team_mzla
     - team_mozillaonline
     authorized_users: []
     client_id: kfax6JBFqyXQcfEEQmEa56np04rm3uYX
@@ -3251,8 +2524,7 @@ apps:
 - application:
     authorized_groups:
     - team_moco_benefited
-    - team_mofo
-#    - team_mzla
+    - team_mzla
     - team_mozillaonline
     - team_elance
     authorized_users: []
@@ -3268,7 +2540,6 @@ apps:
     authorized_groups:
     - team_moco_benefited
     - team_mofo
-#    - team_mzla
     - team_mozillaonline
     - team_elance
     authorized_users: []
@@ -3305,7 +2576,6 @@ apps:
     authorized_groups:
     - team_moco
     - team_mofo
-#    - team_mzla
     authorized_users: []
     client_id: HNCCtcr6z8ZpFX3rT0K3SyDcNonByaUG
     display: false
@@ -3317,7 +2587,6 @@ apps:
     authorized_groups:
     - team_moco
     - team_mofo
-#    - team_mzla
     authorized_users: []
     client_id: GYCcYQfcwVU9lwKF8WT4AvYufBvtp7yx
     display: false
@@ -3329,7 +2598,6 @@ apps:
     authorized_groups:
     - team_moco
     - team_mofo
-#    - team_mzla
     authorized_users: []
     client_id: uSpi6gd7ZqdjA3PwtJ4CavG29DQJla4Y
     display: false
@@ -3369,7 +2637,6 @@ apps:
 - application:
     authorized_groups:
     - team_mofo
-#    - team_mzla
     authorized_users: []
     client_id: 4b1qHRbxLmNLEBgXMi5eYP0sJn5p6q7l
     display: true
@@ -3383,7 +2650,6 @@ apps:
     authorized_groups:
     - team_moco
     - team_mofo
-#    - team_mzla
     authorized_users: []
     client_id: HrdSoUsSJiJOKH2MICEXRXGMxTxUK5fa
     display: false
@@ -3395,7 +2661,6 @@ apps:
     authorized_groups:
     - team_moco
     - team_mofo
-#    - team_mzla
     - team_mozillaonline
     authorized_users: []
     client_id: pozwk4HuT6AELY5Mf1oZPDdIDUo6VId4
@@ -3408,7 +2673,6 @@ apps:
     authorized_groups:
     - team_moco
     - team_mofo
-#    - team_mzla
     authorized_users: []
     client_id: Nqo9YvvVxjpLDLPv7YGmpJXv2JNraUtH
     display: true
@@ -3416,11 +2680,15 @@ apps:
     name: Smartling
     op: auth0
     url: https://sso.smartling.com/sso-apps/dashboard/accounts/3f16c2f8
+    vanity_url:
+    - /smartling
 - application:
     authorized_groups:
     - team_moco
     - team_mofo
     - team_mzla
+    - team_mzai
+    - team_mzvc
     - team_pocket
     - team_mozillaonline
     authorized_users: []
@@ -3437,7 +2705,6 @@ apps:
     authorized_groups:
     - team_moco
     - team_mofo
-#    - team_mzla
     authorized_users: []
     client_id: XCRyDou6ETr873QKnjaFgNsuiLKl6Oj2  # https://bugzilla.mozilla.org/show_bug.cgi?id=1681831
     display: false
@@ -3449,7 +2716,6 @@ apps:
     authorized_groups:
     - team_moco
     - team_mofo
-#    - team_mzla
     authorized_users: []
     client_id: K1fsiDh5Ta7pc7BrEECi2VLhPyqHwy4r
     display: false
@@ -3541,8 +2807,8 @@ apps:
     - /everfi
 - application:
       authorized_groups:
-          - team_opsec
-          - team_secops
+          - mozilliansorg_bitsight-users
+          - mozilliansorg_bitsight-admins
       authorized_users: []
       client_id: eEAeYh6BMPfRyiSDax0tejjxkWi22zkP
       display: true
@@ -3555,10 +2821,9 @@ apps:
 - application:
     authorized_groups:
     - mozilliansorg_sec_splunk_admin
-    - mozilliansorg_sec_splunk_power
-    - mozilliansorg_sec_splunk_normal
-    - mozilliansorg_sec_splunk_temp
     - mozilliansorg_sec_splunk_netops
+    - mozilliansorg_sec_splunk_ir
+    - mozilliansorg_sec_splunk_infrasec
     authorized_users: []
     client_id: oU7d3KS3RqCYDFprG0nQD7eBPeO7uWyl
     display: true
@@ -3569,10 +2834,7 @@ apps:
 - application:
     authorized_groups:
     - mozilliansorg_sec_splunk_admin
-    - mozilliansorg_sec_splunk_power
-    - mozilliansorg_sec_splunk_normal
-    - mozilliansorg_sec_splunk_temp
-    - mozilliansorg_sec_splunk_netops
+    - mozilliansorg_sec_splunk_ir
     authorized_users: []
     client_id: vKsQfVnX140zaI4R8bgij0cyUhrv9k2t
     display: true
@@ -3619,7 +2881,8 @@ apps:
 - application:
     authorized_groups:
     - mozilliansorg_bitrise_access
-    authorized_users: []
+    authorized_users:
+    - bitriseapi.mobile@mozilla.com
     client_id: SgKK7ZZcUT8gLcZPYq229gCHBIyWV2kq
     display: true
     logo: bitrise.png
@@ -3632,19 +2895,17 @@ apps:
     authorized_groups:
     - team_moco
     - team_mofo
-#    - team_mzla
     authorized_users: []
     client_id: 7M49iYODCiCGdldu4awmF2Pr6pHsRZDe
     display: false
     logo: auth0.png
-    name: settings.dev.mozaws.net
+    name: remote-settings-dev.allizom.org
     op: auth0
-    url: https://settings.dev.mozaws.net/v1/admin/
+    url: https://remote-settings-dev.allizom.org/v1/admin/
 - application:
     authorized_groups:
     - team_moco
     - team_mofo
-#    - team_mzla
     authorized_users: []
     client_id: 12lnezLro7iC57ooPPPpVeGHXf8MhaRV
     display: true
@@ -3681,12 +2942,12 @@ apps:
     authorized_groups:
     - everyone
     authorized_users: []
-    client_id: QEM7xyeM5Bqxo5zfxvrQDWyL4Hx3F11a
+    client_id: oAm19NujSERGPVL76RXh31wW5J6KnLRw
     display: false
     logo: auth0.png
     name: connect.allizom.org
     op: auth0
-    url: https://auth.mozilla.auth0.com/samlp/QEM7xyeM5Bqxo5zfxvrQDWyL4Hx3F11a
+    url: https://auth.mozilla.auth0.com/samlp/oAm19NujSERGPVL76RXh31wW5J6KnLRw
     vanity_url:
     - /connect-stage
 - application:
@@ -3694,12 +2955,12 @@ apps:
     authorized_groups:
     - everyone
     authorized_users: []
-    client_id: oAm19NujSERGPVL76RXh31wW5J6KnLRw
+    client_id: QEM7xyeM5Bqxo5zfxvrQDWyL4Hx3F11a
     display: false
     logo: auth0.png
     name: connect.mozilla.org
     op: auth0
-    url: https://auth.mozilla.auth0.com/samlp/oAm19NujSERGPVL76RXh31wW5J6KnLRw
+    url: https://auth.mozilla.auth0.com/samlp/QEM7xyeM5Bqxo5zfxvrQDWyL4Hx3F11a
     vanity_url:
     - /connect
 - application:
@@ -3707,7 +2968,6 @@ apps:
     - team_mozillaonline
     - team_moco
     - team_mofo
-#    - team_mzla
     authorized_users: []
     client_id: 94A5PWkgKK2sJKxUnF8O8k5rNtEMdngk
     display: true
@@ -3754,15 +3014,16 @@ apps:
     - /sentry-pocket
 - application:
     authorized_groups:
-    - mozilliansorg_braze-pocket-access
+    - mozilliansorg_braze-access
     authorized_users: []
     client_id: NEb0WzLMyVPdZZHby2nPjfV2EPUiGkik
     display: true
     logo: braze.png
-    name: Braze (Pocket)
+    name: Braze
     op: auth0
     url: https://auth.mozilla.auth0.com/samlp/NEb0WzLMyVPdZZHby2nPjfV2EPUiGkik
     vanity_url:
+    - /braze
     - /braze-pocket
 - application:
     authorized_groups:
@@ -3770,12 +3031,12 @@ apps:
     authorized_users: []
     client_id: FoeZGnqq0X9fQXQQ9Ve5kdSdPN4eedlG
     display: true
-    logo: prefect-cloud.png
-    name: Prefect Cloud (Pocket)
+    logo: prefect-cloud-v1-legacy.png
+    name: Prefect Cloud (Pocket) - Legacy
     op: auth0
     url: https://auth.mozilla.auth0.com/samlp/FoeZGnqq0X9fQXQQ9Ve5kdSdPN4eedlG
     vanity_url:
-    - /prefect-pocket
+    - /prefect-pocket-v1
 - application:
     authorized_groups:
     - mozilliansorg_logikcull-access
@@ -3792,7 +3053,6 @@ apps:
     authorized_groups:
     - team_moco
     - team_mofo
-#    - team_mzla
     - team_mozillaonline
     authorized_users: []
     client_id: yw8rP8c7Qir1SHybR6xUg7lZixz8FbVy
@@ -3815,20 +3075,6 @@ apps:
     - /modernhealth
 - application:
     authorized_groups:
-    - team_moco
-    - team_mofo
-#    - team_mzla
-    authorized_users: []
-    client_id: DC94aLBL6OGoFuBFKgnVYBHanFP6stmV
-    display: true
-    logo: paradigmreach.png
-    name: Paradigm Reach
-    op: auth0
-    url: https://auth.mozilla.auth0.com/samlp/DC94aLBL6OGoFuBFKgnVYBHanFP6stmV
-    vanity_url:
-    - /paradigmreach
-- application:
-    authorized_groups:
     - mozilliansorg_apollo-studio-access
     authorized_users: []
     client_id: Kc0Ibhin0NJN6TdpsuZB10OwnjDbIZcH
@@ -3839,18 +3085,6 @@ apps:
     url: https://auth.mozilla.auth0.com/samlp/Kc0Ibhin0NJN6TdpsuZB10OwnjDbIZcH
     vanity_url:
     - /apollo-studio
-- application:
-    authorized_groups:
-    - mozilliansorg_mdn-redash-access
-    authorized_users: []
-    client_id: RKJJQHo8w8NghGI751UokRMfz1eY6j1g
-    display: true
-    logo: redash.png
-    name: MDN Redash
-    op: auth0
-    url: https://auth.mozilla.auth0.com/samlp/RKJJQHo8w8NghGI751UokRMfz1eY6j1g
-    vanity_url:
-    - /mdn-redash
 - application:
     authorized_groups:
     - mozilliansorg_snowplow-pocket-access
@@ -3912,7 +3146,7 @@ apps:
     - /digicert
 - application:
     authorized_groups:
-    - mozilliansorg_asana-marketing-access
+    - mozilliansorg_asana-access
     authorized_users: []
     client_id: rgXXV7kQDg7hfD2oKzGVdKOdcDiIEyTX
     display: true
@@ -3922,6 +3156,7 @@ apps:
     url: https://auth.mozilla.auth0.com/samlp/rgXXV7kQDg7hfD2oKzGVdKOdcDiIEyTX
     vanity_url:
     - /asana-marketing
+    - /asana
 - application:
     authorized_groups:
     - mozilliansorg_shepherd-access
@@ -3997,9 +3232,20 @@ apps:
     - /netsuite
 - application:
     authorized_groups:
+    - mozilliansorg_celigo-access
+    authorized_users: []
+    client_id: hMalqNlBk7EksTodXwlb5odn2kFHlH5Q
+    display: true
+    logo: celigo.png
+    name: Celigo
+    op: auth0
+    url: https://integrator.io/sso/mozilla
+    vanity_url:
+    - /celigo
+- application:
+    authorized_groups:
     - team_moco
     - team_mofo
-#    - team_mzla
     authorized_users: []
     display: true
     logo: statuspage.png
@@ -4012,7 +3258,6 @@ apps:
     authorized_groups:
     - team_moco
     - team_mofo
-#    - team_mzla
     - statuspage_service_accounts
     authorized_users: []
     client_id: KqlGE124Mr21HFF3GwSlxEkOHlrX9EG6
@@ -4025,7 +3270,6 @@ apps:
     authorized_groups:
     - team_moco
     - team_mofo
-#    - team_mzla
     - statuspage_service_accounts
     authorized_users: []
     client_id: qpmqtLlYhXKdezJK22j1zmML6cCLuvUg
@@ -4038,26 +3282,16 @@ apps:
     authorized_groups:
     - mozilliansorg_web-sre-aws-access
     - mozilliansorg_pocket_backend
+    - mozilliansorg_iam-project
     authorized_users: []
     client_id: tAtVU4uyJhaXdMEglSWKxMHliBm9yYtS
     display: true
     logo: newrelic.png
-    name: New Relic
+    name: New Relic IT SRE
     op: auth0
     url: https://auth.mozilla.auth0.com/samlp/tAtVU4uyJhaXdMEglSWKxMHliBm9yYtS
     vanity_url:
     - /new-relic-sre
-- application:
-    authorized_groups:
-    - team_moco
-    - team_mofo
-    authorized_users: []
-    client_id: tAtVU4uyJhaXdMEglSWKxMHliBm9yYtS
-    display: false
-    logo: auth0.png
-    name: New Relic IT SRE
-    op: auth0
-    url: https://auth.mozilla.auth0.com/samlp/tAtVU4uyJhaXdMEglSWKxMHliBm9yYtS
 - application:
     authorized_groups:
     - team_moco
@@ -4075,7 +3309,6 @@ apps:
     authorized_groups:
     - team_moco
     - team_mofo
-#    - team_mzla
     authorized_users: []
     client_id: Um2rLocE3s851JXNZzTPnA5DFzWe9OhQ
     display: false
@@ -4089,7 +3322,6 @@ apps:
     authorized_groups:
     - team_moco
     - team_mofo
-#    - team_mzla
     authorized_users: []
     client_id: VeOfYrHRjGuAauFAXRYv4z0rCFe4Ibbc
     display: false
@@ -4103,7 +3335,6 @@ apps:
     authorized_groups:
     - team_moco
     - team_mofo
-#    - team_mzla
     authorized_users: []
     client_id: rCUnlF5BH5z603b8eZ17Xb4SPnHaY4Zm
     display: false
@@ -4116,8 +3347,6 @@ apps:
 - application:
     authorized_groups:
     - team_moco
-    - team_mofo
-#    - team_mzla
     - team_mozillaonline
     authorized_users:
     - billing@mozilla.com
@@ -4131,33 +3360,8 @@ apps:
     - /expensify
 - application:
     authorized_groups:
-    - team_moco
-    - team_mofo
-#    - team_mzla
-    authorized_users:
-    - billing@mozilla.com
-    client_id: 6BLpfXP845A8yris7DaPST25HycC7l2u
-    display: false
-    logo: auth0.png
-    name: Expensify (getpocket.com)
-    op: auth0
-    url: https://www.expensify.com/authentication/saml/loginCallback?domain=getpocket.com
-- application:
-    authorized_groups:
-    - team_moco
-    - team_mofo
-#    - team_mzla
-    authorized_users:
-    - billing@mozilla.com
-    client_id: adMlV8Ud0Z77GLfsaa4fb4oQj8ggf0ws
-    display: false
-    logo: auth0.png
-    name: Expensify
-    op: auth0
-    url: https://www.expensify.com/authentication/saml/loginCallback?domain=mozilla.com
-- application:
-    authorized_groups:
     - mozilliansorg_security_threat_intel
+    - mozilliansorg_rapid7_access
     authorized_users: []
     client_id: iMdY3fgSYQAV5TyVzPbqzAkYMBed2WiV
     display: true
@@ -4195,18 +3399,6 @@ apps:
     authorized_groups:
     - mozilliansorg_auth0-user-mgmt
     authorized_users: []
-    client_id: Qp9pcGMMRqJYS0LBH23JvpaX66D0X3w9
-    display: false
-    logo: auth0.png
-    name: Auth0 Management App (dev)
-    op: auth0
-    url: https://mgmt.sso.allizom.org
-    vanity_url:
-    - /auth0-mgmt-dev
-- application:
-    authorized_groups:
-    - mozilliansorg_auth0-user-mgmt
-    authorized_users: []
     client_id: FImRoNTtYObJwuoyS7CpKiESiRS9Veom
     display: false
     logo: auth0.png
@@ -4215,3 +3407,764 @@ apps:
     url: https://mgmt.sso.mozilla.com
     vanity_url:
     - /auth0-mgmt-prod
+- application:
+    authorized_groups:
+    - mozilliansorg_formassembly-access
+    authorized_users: []
+    client_id: NdaW4gufg0LfVCXCiOXqbV9mn6nou0Qp
+    display: false
+    logo: auth0.png
+    name: FormAssembly
+    op: auth0
+    url: https://auth.mozilla.auth0.com/samlp/NdaW4gufg0LfVCXCiOXqbV9mn6nou0Qp
+- application:
+    authorized_groups:
+    - mozilliansorg_notion-access
+    authorized_users: []
+    client_id: VezzSFjr5YxbFicOqhLmnL8UfUGALQtl
+    display: true
+    logo: notion.png
+    name: Notion
+    op: auth0
+    url: https://auth.mozilla.auth0.com/samlp/VezzSFjr5YxbFicOqhLmnL8UfUGALQtl
+    vanity_url:
+    - /notion
+- application:
+    authorized_groups:
+    - team_moco
+    - mozilliansorg_pocket-dbt-developer-access
+    authorized_users: []
+    client_id: UKiIS6wee3c6zbhxQzUWtZDEurrMM8dd
+    display: true
+    logo: dbtcloud.png
+    name: dbt Cloud (Pocket)
+    op: auth0
+    url: https://cloud.getdbt.com/enterprise-login/mozilla/
+    vanity_url:
+    - /dbtpocket
+- application:
+    authorized_groups:
+    - team_moco
+    authorized_users: []
+    client_id: Pp7UB7N0Jb5B3S5EB37mrkX0bW4w1ogu
+    display: true
+    logo: modeanalytics.png
+    name: Mode Analytics (Pocket)
+    op: auth0
+    url: https://auth.mozilla.auth0.com/samlp/Pp7UB7N0Jb5B3S5EB37mrkX0bW4w1ogu
+    vanity_url:
+    - /modepocket
+- application:
+    authorized_groups:
+    - mozilliansorg_mdn-supabase-access
+    authorized_users: []
+    client_id: vcqV8RiQwMrATd7crKEGq9pgeARTcUxn
+    display: false
+    logo: auth0.png
+    name: Supabase
+    op: auth0
+    url: https://auth.mozilla.auth0.com/samlp/vcqV8RiQwMrATd7crKEGq9pgeARTcUxn
+    vanity_url:
+    - /supabase
+- application:
+    authorized_groups:
+    - team_moco
+    authorized_users: []
+    client_id: lREe0wwQvrFGwjIaSfrYLBuwAUUF8BOt
+    display: true
+    logo: dualo.png
+    name: Dualo
+    op: auth0
+    url: https://app.dualo.io/organizations/mozilla
+- application:
+    authorized_groups:
+    - mozilliansorg_sec_malware_sandbox
+    authorized_users: []
+    client_id: PskxC2pfs6mAWBYXOumcBuxdb8SUIvjd
+    display: true
+    logo: recordedfuturesandbox.png
+    name: Recorded Future Sandbox
+    op: auth0
+    url: https://private.tria.ge/login/saml/mozilla
+    vanity_url:
+    - /recordedfuture
+- application:
+    authorized_groups:
+    - mozilliansorg_sec_threat_intelligence
+    authorized_users: []
+    client_id: sklTdHH9Pr9zdhLKqIaWlr9Ue0Kt73YX
+    display: true
+    logo: recordedfuturethreatintel.png
+    name: Recorded Future Threat Intel
+    op: auth0
+    url: https://app.recordedfuture.com
+- application:
+    authorized_groups:
+    - mozilliansorg_birdbox-development
+    authorized_users: []
+    client_id: rg1EGnekLHA8cMA8bsJvzMZD8rCCLjCp
+    display: false
+    logo: auth0.png
+    name: Birdbox - Development
+    op: auth0
+    url: http://127.0.0.1:8000/oidc/callback/
+- application:
+    authorized_groups:
+    - fuzzing_team
+    - mozillians_project-guardian-admins
+    - mozilliansorg_aws_billing_access
+    - mozilliansorg_cia-aws
+    - mozilliansorg_consolidated-billing-aws
+    - mozilliansorg_consolidated-billing-aws-readonly
+    - mozilliansorg_discourse-devs
+    - mozilliansorg_iam-admins
+    - mozilliansorg_iam-in-transition
+    - mozilliansorg_iam-in-transition-admin
+    - mozilliansorg_iam-readonly
+    - mozilliansorg_meao-admins
+    - mozilliansorg_mozilla-moderator-devs
+    - mozilliansorg_partinfra-aws
+    - mozilliansorg_pdfjs-testers
+    - mozilliansorg_pocket_cloudtrail_readers
+    - mozilliansorg_relay_developer
+    - mozilliansorg_searchfox-aws
+    - mozilliansorg_secops-aws-admins
+    - mozilliansorg_sre
+    - mozilliansorg_sumo-admins
+    - mozilliansorg_sumo-devs
+    - mozilliansorg_voice_aws_admin_access
+    - mozilliansorg_web-sre-aws-access
+    - mozilliansorg_webcompat-alexa-admins
+    - team_mdn
+    - team_netops
+    - team_opsec
+    - team_se
+    - team_secops
+    - voice-dev
+    - vpn_sumo_aws_devs
+    authorized_users: []
+    client_id: JR8HkyiM2i00ma2d1X2xfgdbEHzEYZbS
+    display: true
+    logo: aws.png
+    name: AWS (IT)
+    op: auth0
+    url: https://mozilla-aws.awsapps.com/start
+    vanity_url:
+    - /aws-it
+- application:
+    authorized_groups:
+    - mozilliansorg_pocket_admin
+    - mozilliansorg_pocket_backend
+    - mozilliansorg_pocket_backup_admin
+    - mozilliansorg_pocket_backup_readonly
+    - mozilliansorg_pocket_cloudtrail_readers
+    - mozilliansorg_pocket_dataanalytics
+    - mozilliansorg_pocket_datalearning
+    - mozilliansorg_pocket_developer
+    - mozilliansorg_pocket_fin_ops
+    - mozilliansorg_pocket_frontend
+    - mozilliansorg_pocket_marketing
+    - mozilliansorg_pocket_mozilla_sre
+    - mozilliansorg_pocket_qa
+    - mozilliansorg_pocket_readonly
+    - mozilliansorg_pocket_sales
+    - mozilliansorg_pocket_ads
+    - mozilliansorg_pocket_aws_billing
+    - mozilliansorg_infrasec
+    authorized_users: []
+    client_id: pQ0eb5tzwfYHnAtzGuk88pzxZ68szQtk
+    display: true
+    logo: aws.png
+    name: AWS (Pocket)
+    op: auth0
+    url: https://mozilla-pocket.awsapps.com/start
+    vanity_url:
+    - /aws-pocket
+- application:
+    authorized_groups:
+    - mozilliansorg_mofo_aws_admins
+    - mozilliansorg_mofo_aws_community
+    - mozilliansorg_mofo_aws_everything
+    - mozilliansorg_mofo_aws_labs
+    - mozilliansorg_mofo_aws_projects
+    - mozilliansorg_mofo_aws_sandbox
+    - mozilliansorg_mofo_aws_secure
+    - mozilliansorg_infrasec
+    authorized_users: []
+    client_id: jU8r4uSEF3fUCjuJ63s46dBnHAfYMYfj
+    display: true
+    logo: aws.png
+    name: AWS (MoFo)
+    op: auth0
+    url: https://mofo-aws.awsapps.com/start
+    vanity_url:
+    - /aws-mofo
+- application:
+    authorized_groups:
+    - mozilliansorg_birdbox-innovation-production-access
+    authorized_users: []
+    client_id: be0nN1NCKzKE20n2vJ5SWv2xTgy6LYFq
+    display: false
+    logo: auth0.png
+    name: Birdbox - Innovation Production
+    op: auth0
+    url: https://prod.innovations.prod.webservices.mozgcp.net/oidc/callback/
+- application:
+    authorized_groups:
+    - mozilliansorg_birdbox-innovation-staging-access
+    authorized_users: []
+    client_id: e4SIueOhttjusYo8QsJCkytksb5SAZxC
+    display: false
+    logo: auth0.png
+    name: Birdbox - Innovation Staging
+    op: auth0
+    url: https://stage.innovations.prod.webservices.mozgcp.net/oidc/callback/
+- application:
+    authorized_groups:
+    - mozilliansorg_birdbox-innovation-development-access
+    authorized_users: []
+    client_id: 8VCDnPIPcxzZDFlKePQzuTV7pnIIEylW
+    display: false
+    logo: auth0.png
+    name: Birdbox - Innovation Development
+    op: auth0
+    url: https://dev.innovations.prod.webservices.mozgcp.net/oidc/callback/
+- application:
+    authorized_groups:
+    - mozilliansorg_pigment-access
+    authorized_users: []
+    client_id: YqndwUFJ6hXGuEOmwv9e40vwmXUHiHHX
+    display: true
+    logo: pigment.png
+    name: Pigment
+    op: auth0
+    url: https://auth.mozilla.auth0.com/samlp/YqndwUFJ6hXGuEOmwv9e40vwmXUHiHHX
+    vanity_url:
+    - /pigment
+- application:
+    authorized_groups:
+    - mozilliansorg_cinder_stage_access
+    authorized_users: []
+    client_id: V4OPJXyVtfAJJI4IH2fYKOy3SD2kMnxr
+    display: false
+    logo: auth0.png
+    name: Cinder - Stage
+    op: auth0
+    url: https://stage.cinder.nonprod.webservices.mozgcp.net/complete/okta-oauth2/
+- application:
+    authorized_groups:
+    - mozilliansorg_cinder_production_access
+    authorized_users: []
+    client_id: hHrX9b8DhFWN01y3qsAbw9tWc5vHeL7Q
+    display: false
+    logo: auth0.png
+    name: Cinder - Prod
+    op: auth0
+    url: https://prod.cinder.prod.webservices.mozgcp.net/complete/okta-oauth2/
+- application:
+    authorized_groups:
+    - mozilliansorg_birdbox-demo-development
+    authorized_users: []
+    client_id: 78re5gBn30rv3ticnKEzRAySajJAOWlm
+    display: false
+    logo: auth0.png
+    name: Birdbox Demo - Dev
+    op: auth0
+    url: https://dev.birdbox.nonprod.webservices.mozgcp.net/
+- application:
+    authorized_groups:
+    - mozilliansorg_birdbox-demo-staging
+    authorized_users: []
+    client_id: yWIIMRIRuBsCubL6oVbI4DvrJdMrD87g
+    display: false
+    logo: auth0.png
+    name: Birdbox Demo - Staging
+    op: auth0
+    url: https://stage.birdbox.nonprod.webservices.mozgcp.net/
+- application:
+    authorized_groups:
+    - mozilliansorg_birdbox-demo-production
+    authorized_users: []
+    client_id: x1eH5sbQE0SqJKMzl8HZ3xHIhUCxSbvt
+    display: false
+    logo: auth0.png
+    name: Birdbox Demo - Production
+    op: auth0
+    url: https://birdbox.mozilla.com/
+- application:
+    authorized_groups:
+    - mozilliansorg_remote-dot-com-access
+    - team_mzla
+    authorized_users: []
+    client_id: 8kBFdSJ7MgTkqTdNQFUDzgbVK5eViSlo
+    display: true
+    logo: remote.png
+    name: Remote.com
+    op: auth0
+    url: https://auth.mozilla.auth0.com/samlp/8kBFdSJ7MgTkqTdNQFUDzgbVK5eViSlo
+    vanity_url:
+    - /remote
+- application:
+    authorized_groups:
+    - mozilliansorg_small-improvements-access
+    - team_mzla
+    authorized_users: []
+    client_id: t1FpfVDNd5dg8T6xuxZ9vDVKo39gJxuS
+    display: true
+    logo: small-improvements.png
+    name: small-improvements
+    op: auth0
+    url: https://auth.mozilla.auth0.com/samlp/t1FpfVDNd5dg8T6xuxZ9vDVKo39gJxuS
+    vanity_url:
+    - /small-improvements
+- application:
+    authorized_groups:
+    - mozilliansorg_prefect-cloud-pocket-access
+    authorized_users: []
+    client_id: Xf38rDCbMQ7XH26JkqHDcpRRHaaFkoyM
+    display: true
+    logo: prefect-cloud.png
+    name: Prefect Cloud (Pocket)
+    op: auth0
+    url: https://api.workos.com/sso/authorize?client_id=client_01GBBFMN6NWC8CQWRJTYS9TKTH&redirect_uri=https%3A%2F%2Fapp.prefect.cloud%2Fauth%2Fcallback&response_type=code&connection=conn_01HMW07E8GPGHH8YXQA64DJ4G2
+    vanity_url:
+    - /prefect-pocket
+- application:
+    authorized_groups:
+    - mozilliansorg_cloudpay-access
+    authorized_users: []
+    client_id: TpxQWvotVNuSoFSm1Dd5FAoIn6PsSQPe
+    display: true
+    logo: cloudpay.png
+    name: CloudPay
+    op: auth0
+    url: https://auth.mozilla.auth0.com/samlp/TpxQWvotVNuSoFSm1Dd5FAoIn6PsSQPe
+    vanity_url:
+    - /cloudpay
+- application:
+    authorized_groups:
+    - mozilliansorg_chatgpt-access
+    authorized_users: []
+    client_id: LiLlFN0EmDJvMdhGKkOJT4f1w8TN8OYF
+    display: true
+    logo: chatgpt.png
+    name: ChatGPT
+    op: auth0
+    url: https://chatgpt.com/auth/login?sso=true&connection=org-sLqTjCQdQnlUB9bQLXw9KxNE
+    vanity_url:
+    - /chatgpt
+- application:
+    AAL: LOW
+    authorized_groups:
+    - everyone
+    authorized_users: []
+    client_id: bGAXasmlyz1xnBeZXHbUrUSyUI7dTnLA
+    display: false
+    logo: auth0.png
+    name: Swoogo 2024
+    op: auth0
+    url: https://auth.mozilla.auth0.com/samlp/bGAXasmlyz1xnBeZXHbUrUSyUI7dTnLA
+    vanity_url:
+    - /swoogo
+- application:
+    authorized_groups:
+    - mozilliansorg_miniorange_mozilladev-access
+    authorized_users: []
+    client_id: ePHcxBFOM9SwXhIS0kKdB5zs7vbDVled
+    display: false
+    logo: auth0.png
+    name: miniOrange - MozillaDev
+    op: auth0
+    url: https://auth.mozilla.auth0.com/samlp/ePHcxBFOM9SwXhIS0kKdB5zs7vbDVled
+    vanity_url:
+    - /miniorange-dev
+- application:
+    authorized_groups:
+    - mozilliansorg_miniorange_mozillastage-access
+    authorized_users: []
+    client_id: 7m30y3Ty9AyasRVCBqZ1L5bSjYn7IeQa
+    display: false
+    logo: auth0.png
+    name: miniOrange - MozillaStage
+    op: auth0
+    url: https://auth.mozilla.auth0.com/samlp/7m30y3Ty9AyasRVCBqZ1L5bSjYn7IeQa
+    vanity_url:
+    - /miniorange-stage
+- application:
+    authorized_groups:
+    - mozilliansorg_miniorange_mozillaprod-access
+    authorized_users: []
+    client_id: oaQIlUTAW4g9DUIXrRMs4QIUE8ZLPrFH
+    display: false
+    logo: auth0.png
+    name: miniOrange - MozillaProd
+    op: auth0
+    url: https://auth.mozilla.auth0.com/samlp/oaQIlUTAW4g9DUIXrRMs4QIUE8ZLPrFH
+    vanity_url:
+    - /miniorange-prod
+- application:
+    authorized_groups:
+    - mozilliansorg_commonroom-access
+    authorized_users: []
+    client_id: vUaqPKO80tbdM5jKACsOK8SMVMvXoviy
+    display: true
+    logo: commonroom.png
+    name: Common Room
+    op: auth0
+    url: https://auth.mozilla.auth0.com/samlp/vUaqPKO80tbdM5jKACsOK8SMVMvXoviy
+    vanity_url:
+    - /commonroom
+- application:
+    authorized_groups:
+    - team_moco
+    authorized_users: []
+    client_id: EdXwLrak94Z5f5x54XWUa1fGCzL1858X
+    display: false
+    logo: auth0.png
+    name: Skylight - Prod
+    op: auth0
+    url: https://fxms-skylight.netlify.app
+    vanity_url:
+    - /skylight-prod
+- application:
+    authorized_groups:
+    - mozilliansorg_skylight_dev-access
+    authorized_users: []
+    client_id: iq2rsgonYgHboOhno3rpiAfQkZZsJP0f
+    display: false
+    logo: auth0.png
+    name: Skylight - Dev
+    op: auth0
+    url: https://auth.mozilla.auth0.com/samlp/iq2rsgonYgHboOhno3rpiAfQkZZsJP0f
+    vanity_url:
+    - /skylight-dev
+- application:
+    authorized_groups:
+    - mozilliansorg_bedrock_cms_production-access
+    authorized_users: []
+    client_id: Y95WuEhdPHIESqkzsDtdtDj9PviViopt
+    display: false
+    logo: auth0.png
+    name: Bedrock CMS - Prod
+    op: auth0
+    url: https://auth.mozilla.auth0.com/samlp/Y95WuEhdPHIESqkzsDtdtDj9PviViopt
+- application:
+    authorized_groups:
+    - mozilliansorg_bedrock_cms_staging-access
+    authorized_users: []
+    client_id: 5LoaSUmcuJ5nx5tWNjAULTTX6yCUsqF6
+    display: false
+    logo: auth0.png
+    name: Bedrock CMS - Stage
+    op: auth0
+    url: https://auth.mozilla.auth0.com/samlp/5LoaSUmcuJ5nx5tWNjAULTTX6yCUsqF6
+- application:
+    authorized_groups:
+    - mozilliansorg_bedrock_cms_dev-access
+    authorized_users: []
+    client_id: fRwAC7Xem142cfNw0VhpEKeheCuqXR3k
+    display: false
+    logo: auth0.png
+    name: Bedrock CMS - Dev
+    op: auth0
+    url: https://auth.mozilla.auth0.com/samlp/fRwAC7Xem142cfNw0VhpEKeheCuqXR3k
+- application:
+    authorized_groups:
+    - mozilliansorg_bedrock_cms_local_dev-access
+    authorized_users: []
+    client_id: gQPwkkE408b5aQRI4we82zyEt4TIj5dV
+    display: false
+    logo: auth0.png
+    name: Bedrock CMS - Local Dev
+    op: auth0
+    url: https://auth.mozilla.auth0.com/samlp/gQPwkkE408b5aQRI4we82zyEt4TIj5dV
+- application:
+    authorized_groups:
+    - everyone
+    authorized_users: []
+    client_id: PSz60Psx4kv7UvQIkTKjcgYiHyI9yI7J
+    display: true
+    logo: frontify.png
+    name: brand.mozilla
+    op: auth0
+    url: https://brand.mozilla.com/auth
+    vanity_url:
+    - /frontify
+- application:
+    authorized_groups:
+    - mozilliansorg_aws_billing_access
+    - mozilliansorg_cloudservices_aws_admin
+    - mozilliansorg_cloudservices_aws_autograph_admin
+    - mozilliansorg_cloudservices_aws_autograph_dev
+    - mozilliansorg_cloudservices_aws_dev_developers
+    - mozilliansorg_cloudservices_aws_developer_services_dev
+    - mozilliansorg_cloudservices_aws_fxa_developers
+    - mozilliansorg_cloudservices_aws_taskcluster_devs
+    - mozilliansorg_infrasec
+    authorized_users: []
+    client_id: c0x6EoLdp55H2g2OXZTIUuaQ4v8U4xf9
+    display: true
+    logo: aws.png
+    name: AWS (CloudServices)
+    op: auth0
+    url: https://mozilla-cloudservices.awsapps.com/start
+    vanity_url:
+    - /aws-cloudservices
+- application:
+    authorized_groups:
+    - team_moco
+    - team_elance
+    - mozilliansorg_lifelabs-access
+    authorized_users: []
+    client_id: OWmWq6YwMvc8TwIrMlWzK81KaLZDkOYw
+    display: true
+    logo: lifelabs.png
+    name: LifeLabs Learning
+    op: auth0
+    url: https://app.lifelabslearning.com/training?sso=mozilla
+    vanity_url:
+    - /lifelabs
+    - /mlp
+- application:
+    authorized_groups:
+    - mozilliansorg_azure-access
+    authorized_users: []
+    client_id: cg5g2Q48SzDjVHjqfmcXJIm8YTg40nTO
+    display: true
+    logo: azure.png
+    name: Azure
+    op: auth0
+    url: https://auth.mozilla.auth0.com/samlp/cg5g2Q48SzDjVHjqfmcXJIm8YTg40nTO
+    vanity_url:
+    - /azure
+- application:
+    authorized_groups:
+    - mozilliansorg_nemo-access
+    authorized_users: []
+    client_id: cu1yFaGxa5mp0icMnPF6Oh8MBY2r1arO
+    display: false
+    logo: auth0.png
+    name: Nemo Grafana
+    op: auth0
+    url: https://nemo.mozilla.net/grafana/
+- application:
+    authorized_groups:
+    - mozilliansorg_slackeg-access
+    - mozilliansorg_slack-access
+    - team_moco
+    - team_mofo
+    - team_mzla
+    - team_mzai
+    - team_mzvc
+    - team_mozillaonline
+    - travelling_accounts
+    - team_office_support
+    authorized_users: []
+    client_id: htnpYVQ6jsBnxstKeETNerYgVUjvE7SB
+    display: true
+    logo: slack.png
+    name: Slack Enterprise
+    op: auth0
+    url: https://auth.mozilla.auth0.com/samlp/htnpYVQ6jsBnxstKeETNerYgVUjvE7SB
+    vanity_url:
+    - /slack
+- application:
+    authorized_groups:
+    - team_moco
+    - team_mzla
+    - mozilliansorg_testrail-access
+    authorized_users: []
+    client_id: pQei6Ff5qKo40KJuCaR3BV3IbydschsA
+    display: true
+    logo: testrail.png
+    name: testrail.io
+    op: auth0
+    url: https://mozilla.testrail.io/
+- application:
+    authorized_groups:
+    - mozilliansorg_fundraiseup-access
+    authorized_users: []
+    client_id: SS4Kdjkp6mHdlIQi6YxdGmvQEMuYr1nI
+    display: true
+    logo: fundraiseup.png
+    name: FundraiseUp
+    op: auth0
+    url: https://dashboard.fundraiseup.com/user/login
+    vanity_url:
+    - /fundraiseup
+- application:
+    authorized_groups:
+    - team_mofo
+    authorized_users: []
+    client_id: 6h658FkrhSOuB5eKgFyfA5hgHyzvCWqX
+    display: true
+    logo: udemy-mofo.png
+    name: Udemy - MoFo
+    op: auth0
+    url: https://mozillafoundation.udemy.com/organization/init-sso-login/
+    vanity_url:
+    - /udemy-mofo
+- application:
+    authorized_groups:
+    - team_moco
+    authorized_users: []
+    client_id: hgQzRVwHdE48IycE4j9QewOQqhQXZTDM
+    display: false
+    logo: auth0.png
+    name: Elastic SSO Validation
+    op: auth0
+    url: https://amitchell-sso-test-20240807.kb.us-central1.gcp.cloud.es.io:9243/
+- application:
+    authorized_groups:
+    - team_moco
+    authorized_users: []
+    client_id: xZLJSlCh2O9ZuJxj7Gpn3lSXiBG8I6Fw
+    display: false
+    logo: auth0.png
+    name: Bigeye
+    op: auth0
+    url: https://app.bigeye.com/sso/oidcLogin/mozilla.com
+- application:
+    authorized_groups:
+    - mozilliansorg_otter-access
+    authorized_users: []
+    client_id: py4QBPIk9R790dXMBmNx0hcRVS5RMc1z
+    display: true
+    logo: otter.png
+    name: Otter.ai
+    op: auth0
+    url: https://auth.mozilla.auth0.com/samlp/py4QBPIk9R790dXMBmNx0hcRVS5RMc1z
+    vanity_url:
+    - /otter
+- application:
+    authorized_groups:
+    - mozilliansorg_fakespot-elastic-viewer
+    - mozilliansorg_fakespot-elastic-editor
+    - mozilliansorg_fakespot-elastic-admin
+    authorized_users: []
+    client_id: 49Xh3NECNniQVMqkZ9mGd9IblxKHeTw1
+    display: false
+    logo: auth0.png
+    name: Fakespot Elastic
+    op: auth0
+    url: https://localhost/
+- application:
+    authorized_groups:
+    - team_moco
+    authorized_users: []
+    client_id: eImHUTzbUnCYiM3gtkA4aeSPo5kJ12rO
+    display: false
+    logo: auth0.png
+    name: webcompat.fuzzing.mozilla.org
+    op: auth0
+    url: https://webcompat.fuzzing.mozilla.org/oidc/callback/
+- application:
+    authorized_groups:
+    - mozilliansorg_tropic-access
+    authorized_users: []
+    client_id: IJeiyM5sn67r3OpEcAHsp0MWN9APLoMQ
+    display: true
+    logo: tropic.png
+    name: Tropic
+    op: auth0
+    url: https://auth.mozilla.auth0.com/samlp/IJeiyM5sn67r3OpEcAHsp0MWN9APLoMQ
+    vanity_url:
+    - /tropic
+- application:
+    authorized_groups:
+    - mozilliansorg_fastly-access
+    authorized_users: []
+    client_id: 3wvupznpjbLkUNF1HLzb6gygR9y1jAwO
+    display: true
+    logo: fastly.png
+    name: Fastly
+    op: auth0
+    url: https://auth.mozilla.auth0.com/samlp/3wvupznpjbLkUNF1HLzb6gygR9y1jAwO
+    vanity_url:
+    - /fastly
+- application:
+    authorized_groups:
+    - team_moco
+    - mozilliansorg_fable-access
+    authorized_users: []
+    client_id: DlyjWdZjRtd3bRTplD2akcW5xOEWRqTI
+    display: false
+    logo: auth0.png
+    name: Fable
+    op: auth0
+    url: https://auth.mozilla.auth0.com/samlp/DlyjWdZjRtd3bRTplD2akcW5xOEWRqTI
+    vanity_url:
+    - /fable
+- application:
+    authorized_groups:
+    - mozilliansorg_sec_tines-access
+    - mozilliansorg_sec_tines-admin
+    - team_moco
+    - team_mofo
+    - team_mzla
+    - team_mzai
+    - team_mzvc
+    authorized_users: []
+    client_id: cPH0znP4n74JvPf9Efc1w6O8KQWwT634
+    display: false
+    logo: tines.png
+    name: Tines
+    op: auth0
+    url: https://auth.mozilla.auth0.com/samlp/cPH0znP4n74JvPf9Efc1w6O8KQWwT634
+    vanity_url:
+    - /tines
+- application:
+    authorized_groups:
+    - team_moco
+    - team_mofo
+    - team_mzai
+    - team_mzla
+    - team_mzvc
+    authorized_users: []
+    display: true
+    logo: adp.png
+    name: ADP
+    op: auth0
+    url: https://www.adp.com/logins.aspx
+    vanity_url:
+    - /adp
+- application:
+    authorized_groups:
+    - team_mzla
+    authorized_users: []
+    client_id: 703MNDVnbgrw2yGGk2ZLliNCKalgMmiA
+    display: true
+    logo: sequoia.png
+    name: Sequoia
+    op: auth0
+    url: https://login.sequoia.com/azure-sso?orgId=66ea47c0aa9d029b9bbf4f38
+    vanity_url:
+    - /sequoia
+- application:
+    authorized_groups:
+    - mozilliansorg_fleet-access
+    authorized_users: []
+    client_id: y2IUqDvVuid2x8r6I6XVlLFb55empXSW
+    display: false
+    logo: fleet.png
+    name: Fleet
+    op: auth0
+    url: https://auth.mozilla.auth0.com/samlp/y2IUqDvVuid2x8r6I6XVlLFb55empXSW
+    vanity_url:
+    - /fleet
+- application:
+    authorized_groups:
+    - mozilliansorg_wiz_global_admins
+    - mozilliansorg_wiz_readonly
+    - mozilliansorg_wiz_sirt
+    - mozilliansorg_wiz_sre
+    - mozilliansorg_wiz_product_owners
+    authorized_users: []
+    client_id: aKoiZu74J3ktlnzeq66ZaEbvxc9hzGlp
+    display: true
+    logo: wiz.png
+    name: Wiz
+    op: auth0
+    url: https://app.wiz.io/idp-login?clientId=7m49eps51kha70jq50ttu43jv4&idp=Auth0
+    vanity_url:
+    - /wiz

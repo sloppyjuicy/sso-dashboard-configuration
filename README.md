@@ -45,7 +45,7 @@ This is a list of available fields.
       vanity_url: ['/an-easy-to-remember-url']
 
       ### Security settings
-      # The list of users and groups allowed to access this RP. 
+      # The list of users and groups allowed to access this RP.
       # If both authorize_users and authorized_groups are empty, everyone is allowed
       # If one is empty and the other has content, only the members of the non empty one are allowed
       # If both have content, the union of everyone in both are allowed
@@ -54,11 +54,6 @@ This is a list of available fields.
       # This is used by the SSO Dashboard for display purposes and for first stage access control by the Access Provider
       authorized_users: []
       authorized_groups: []
-
-      # How many seconds before a user who has logged into this RP is denied access. The timer reset for each login,
-      # thus access is only denied if you haven't logged in at all for this period of time. Is it enforced by the Access
-      # Provider
-      expire_access_when_unused_after: 7776000
 
       ## Mappings to standard levels (https://infosec.mozilla.org/guidelines/risk/standard_levels) AAL
       ## values below are available at the IAM well-known endpoint
@@ -75,14 +70,14 @@ In order to publish a change you must:
 
 1. Clone the repository
 2. Pull request to `master` and get it approved.
-3. Have the PR merged to the `master` branch which will cause CI to deploy to 
-   the *dev* S3 bucket called `sso-dashboard.configuration` which can then be 
+3. Have the PR merged to the `master` branch which will cause CI to deploy to
+   the *dev* S3 bucket called `sso-dashboard.configuration` which can then be
    seen at https://sso.allizom.org/dashboard and is used by the Auth0 dev tenant
    rules from https://cdn.sso.allizom.org/apps.yml
-4. Tag the commit in `master` that should be deployed to *production* with a 
+4. Tag the commit in `master` that should be deployed to *production* with a
    conforming tag name. A conforming tag name for a production deploy is in the
    format of [1.2.3-prod](https://github.com/mozilla-iam/sso-dashboard-configuration/blob/26f1e5c7d8512b1a447dbac0e981fa3afbf3c346/deploy.sh#L11).
-   Applying this tag will cause CI to deploy to the 
+   Applying this tag will cause CI to deploy to the
    `sso-dashboard.configuration-prod` S3 bucket used by production. The easiest
    way to tag and trigger a production deployment is to [create a 'release'](https://github.com/mozilla-iam/sso-dashboard-configuration/releases),
    we are using semantic versioning (0.0.1) for this repo.
